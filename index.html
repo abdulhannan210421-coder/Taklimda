@@ -3,175 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Taklimda Mobile</title>
-    <!-- Library QRCode CDN Online -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>Taklimda Mobile - Koreksi Absen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <script>
-// ============================================================================
-// INDEXEDDB HELPER (STORAGE 13.000+ DATA SANTRI TANPA ERROR MEMORI)
-// ============================================================================
-const IDB = {
-    dbName: 'TaklimdaDB',
-    storeName: 'masterSantri',
-    open() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open(this.dbName, 1);
-            req.onupgradeneeded = () => req.result.createObjectStore(this.storeName);
-            req.onsuccess = () => resolve(req.result);
-            req.onerror = () => reject(req.error);
-        });
-    },
-    async set(data) {
-        try {
-            const db = await this.open();
-            const tx = db.transaction(this.storeName, 'readwrite');
-            tx.objectStore(this.storeName).put(data, 'master_list');
-            return tx.complete;
-        } catch(e) { console.error("IDB Set Error:", e); }
-    },
-    async get() {
-        try {
-            const db = await this.open();
-            return new Promise((resolve) => {
-                const tx = db.transaction(this.storeName, 'readonly');
-                const req = tx.objectStore(this.storeName).get('master_list');
-                req.onsuccess = () => resolve(req.result || {});
-                req.onerror = () => resolve({});
-            });
-        } catch(e) { return {}; }
-    }
-};
-
-window.getValPeka = function(obj, targetKeys) {
-    if (!obj || typeof obj !== 'object') return '';
-    const normalizedMap = {};
-    for (let key in obj) {
-        if (Object.prototype.hasOwnProperty.call(obj, key)) {
-            let cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-            normalizedMap[cleanKey] = obj[key];
+    window.getValPeka = function(obj, targetKeys) {
+        if (!obj || typeof obj !== 'object') return '';
+        const normalizedMap = {};
+        for (let key in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, key)) {
+                let cleanKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                normalizedMap[cleanKey] = obj[key];
+            }
         }
-    }
-    for (let target of targetKeys) {
-        let cleanTarget = target.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (normalizedMap[cleanTarget] !== undefined && normalizedMap[cleanTarget] !== null) {
-            return String(normalizedMap[cleanTarget]).trim();
+        for (let target of targetKeys) {
+            let cleanTarget = target.toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (normalizedMap[cleanTarget] !== undefined && normalizedMap[cleanTarget] !== null) {
+                return String(normalizedMap[cleanTarget]).trim();
+            }
         }
-    }
-    return '';
-};
-
-document.addEventListener('click', function(e) {
-    const editBtn = e.target.closest('button, .alpha-btn, .nav-item');
-    if (editBtn) {
-        editBtn.classList.remove('bounce-click');
-        void editBtn.offsetWidth; 
-        editBtn.classList.add('bounce-click');
-    }
-});
-</script>
+        return '';
+    };
+    </script>
     
     <style>
 :root {
-    --primary: #0a7a5c;
-    --primary-hover: #075e46;
-    --primary-light: #e0f2ec;
-    --bg-color: #f4f7f6;
+    --primary: #059669;
+    --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    --bg-color: #f8fafc;
     --card-bg: #ffffff;
-    --text-main: #1f2937;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
-    --danger: #ef4444;
-    --success: #10b981;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    
+    --sakit-color: #0284c7;
+    --sakit-bg: #e0f2fe;
+    --izin-color: #d97706;
+    --izin-bg: #fef3c7;
+    --alpha-color: #e11d48;
+    --alpha-bg: #ffe4e6;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
-body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 85px; overflow-x: hidden; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+body { background-color: var(--bg-color); color: var(--text-main); padding: 10px; max-width: 480px; margin: 0 auto; padding-bottom: 20px; }
 
-#print-area { display: none; }
-.view { display: none; padding: 16px; max-width: 1100px; margin: 0 auto; }
+.view { display: none; }
 .view.active { display: block !important; }
-.hidden { display: none !important; }
 
-/* ANIMASI BOUNCE & SMOOTH */
-@keyframes bounceIn {
-    0% { transform: scale(0.85); opacity: 0; }
-    70% { transform: scale(1.02); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
-@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+/* ANIMASI UI */
+@keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes bounceClick { 0% { transform: scale(1); } 50% { transform: scale(0.92); } 100% { transform: scale(1); } }
 
-.bounce-in { animation: bounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.slide-down { animation: slideDown 0.3s ease-out; }
-.fade-in { animation: fadeIn 0.3s ease-in; }
-.bounce-click { animation: bounceClick 0.2s ease; }
-.bounce-hover { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-.bounce-hover:active { transform: scale(0.95); }
+.slide-up { animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.fade-in { animation: fadeIn 0.2s ease-in; }
 
-/* HEADER MOBILE */
-.header-app { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); padding: 14px 18px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 12px; }
-.avatar { background: linear-gradient(135deg, var(--primary), #0c9c74); color: white; width: 42px; height: 42px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; box-shadow: 0 4px 10px rgba(10,122,92,0.25); }
+/* TOP DECK HEADER & PROGRESS */
+.top-deck { background: white; border-radius: 18px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 10px; }
+.header-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.avatar { background: var(--primary-gradient); color: white; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 800; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
 
-/* PANEL TANGGAL HIJRIYAH */
-.date-panel { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px 18px; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 14px; }
-.hijri-adjuster { display: flex; align-items: center; gap: 8px; background: var(--bg-color); padding: 4px 10px; border-radius: 20px; }
-.hijri-adjuster button { background: white; border: 1px solid var(--border); border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.progress-inline { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border); }
+.progress-bar-bg { flex: 1; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
+.progress-bar-fill { background: var(--primary); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
-/* STATS GRID RESPONSIVE */
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
-.stat-card { background: white; padding: 12px 10px; border-radius: 16px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.02); }
-.stat-icon { width: 34px; height: 34px; border-radius: 10px; margin: 0 auto 4px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
-.stat-title { font-size: 10px; color: var(--text-muted); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 18px; font-weight: bold; color: var(--text-main); margin-top: 2px; }
+/* CONTROLS ROW */
+.controls-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.search-box-mini { flex: 1; position: relative; }
+.search-box-mini input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--border); border-radius: 12px; outline: none; background: white; font-size: 12px; font-weight: 600; }
+.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: 0.5; }
 
-.panel { background: white; padding: 18px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 15px; }
-.border-left-green { border-left: 5px solid var(--primary); }
-.panel-title { font-size: 14px; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; }
+.filter-tabs { display: flex; gap: 4px; }
+.tab-btn { padding: 8px 10px; border: 1px solid var(--border); background: white; border-radius: 10px; font-size: 10px; font-weight: 800; color: var(--text-muted); cursor: pointer; text-align: center; }
+.tab-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); }
 
-/* FORM INPUT MODERN */
-.input-group { text-align: left; margin-bottom: 14px; }
-.input-group label { display: block; font-size: 10px; font-weight: bold; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-input[type="text"], input[type="password"], input[type="number"], select { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 12px; outline: none; transition: 0.25s; background: #fafafa; font-size: 13px; }
-input:focus, select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(10,122,92,0.1); }
+/* NEO-CARD SANTRI (SUPER INTERAKTIF & MODERN) */
+.santri-list { display: flex; flex-direction: column; gap: 8px; }
+.santri-card { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; transition: transform 0.15s; }
+.santri-card:active { transform: scale(0.99); }
 
-button { padding: 12px 20px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.2s; }
-.btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(10,122,92,0.25); }
-.btn-primary:hover { background: var(--primary-hover); }
-.btn-danger { background: var(--danger); color: white; box-shadow: 0 4px 12px rgba(239,68,68,0.25); }
-.btn-success { background: var(--success); color: white; box-shadow: 0 4px 12px rgba(16,185,129,0.25); }
-.btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
-.w-100 { width: 100%; }
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.santri-nama { font-size: 13px; font-weight: 800; color: var(--text-main); line-height: 1.2; }
+.santri-meta { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
 
-/* TABEL RESPONSIVE MOBILE */
-.table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 12px; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
-th { background: #f8fafc; padding: 11px 14px; font-size: 10px; text-transform: uppercase; color: var(--text-muted); text-align: left; letter-spacing: 0.5px; }
-td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
+.pills-group { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
+.pill-tag { padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+.pill-sakit { background: var(--sakit-bg); color: var(--sakit-color); }
+.pill-izin { background: var(--izin-bg); color: var(--izin-color); }
+.pill-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
 
-/* BOTTOM NAVIGATION BAR MODERN */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100vw; height: 65px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 9999; box-shadow: 0 -4px 20px rgba(0,0,0,0.06); }
-.nav-item { background: none; border: none; padding: 8px 12px; display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 10px; cursor: pointer; flex: 1; border-radius: 12px; transition: all 0.25s ease; }
-.nav-item.active { color: var(--primary); font-weight: bold; background: var(--primary-light); }
-.nav-icon { font-size: 18px; margin-bottom: 2px; }
+/* BADGES STATUS VERIFIKASI */
+.badge-status { padding: 4px 8px; border-radius: 8px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
+.badge-benar { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+.badge-koreksi { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+.badge-belum { background: #f1f5f9; color: #94a3b8; border: 1px solid var(--border); }
 
-/* LOGIN SCREEN MOBILE */
-#view-login { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: linear-gradient(135deg, #d8f3ec 0%, #f0f4f3 100%); justify-content: center; align-items: center; padding: 20px; z-index: 99999; }
+/* TOMBOL AKSI KARTU */
+.card-actions { display: flex; gap: 6px; pt: 4px; border-top: 1px dashed #f1f5f9; }
+.btn-act { flex: 1; padding: 7px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.15s; }
+.btn-act:active { transform: scale(0.96); }
+
+.btn-verify { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+.btn-edit-card { background: #f8fafc; color: var(--text-main); border: 1px solid var(--border); }
+
+/* MODAL & CHIPS */
+#modal-edit-koreksi { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
+.modal-content { background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+
+.modal-header { padding: 12px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+
+.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+
+.chips-wrapper { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; min-height: 20px; }
+.chip { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
+.chip-sakit { background: var(--sakit-bg); color: var(--sakit-color); }
+.chip-izin { background: var(--izin-bg); color: var(--izin-color); }
+.chip-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
+.chip-del { cursor: pointer; opacity: 0.7; font-size: 11px; }
+
+.quick-input-group { display: flex; gap: 6px; }
+.quick-input-group input { width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; outline: none; }
+.btn-add-chip { padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; }
+
+/* LOGIN SCREEN */
+#view-login { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; justify-content: center; align-items: center; padding: 16px; z-index: 99999; }
 #view-login.active { display: flex !important; }
-.login-card { background: white; padding: 35px 25px; border-radius: 24px; box-shadow: 0 15px 35px rgba(10,122,92,0.15); width: 100%; max-width: 380px; text-align: center; }
-.alphabet-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-.alpha-btn { padding: 9px 0; background: var(--bg-color); border: none; border-radius: 8px; font-weight: bold; font-size: 12px; cursor: pointer; transition: 0.2s; }
-.alpha-btn.selected { background: var(--primary); color: white; transform: scale(1.05); }
+.login-card { background: white; padding: 24px 18px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); width: 100%; border: 1px solid var(--border); text-align: center; }
+.alphabet-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 14px; }
+.alpha-btn { padding: 8px 0; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; color: var(--text-main); }
+.alpha-btn.selected { background: var(--primary); color: white; }
 
-.toast { position: fixed; bottom: 75px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 10px 22px; border-radius: 25px; font-size: 12px; font-weight: bold; opacity: 0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 99999; pointer-events: none; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(-5px); }
-
-.badge-status { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; }
-.badge-sudah { background: #d1fae5; color: #065f46; }
-.badge-belum { background: #f3f4f6; color: #6b7280; }
-
-.modal-preview-card { background: #e0f2ec; border: 1px solid #a7f3d0; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; font-size: 11px; color: #065f46; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 8px 18px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 99999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
     </style>
 </head>
 <body>
@@ -180,289 +144,132 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
 
     <!-- LOGIN MODAL -->
     <div id="view-login" class="view active">
-        <div class="login-card bounce-in">
-            <div style="width: 65px; height: 65px; background: linear-gradient(135deg, var(--primary), #0c9c74); color: white; font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; border-radius: 18px; margin: 0 auto 15px; box-shadow: 0 8px 20px rgba(10,122,92,0.3);" id="login-logo">?</div>
-            <h2 style="font-size:20px; color:var(--text-main);">Sistem Taklimda</h2>
-            <p style="color:var(--text-muted); font-size:12px; margin-bottom: 22px;">Pondok Pesantren Sidogiri</p>
+        <div class="login-card slide-up">
+            <div style="width: 48px; height: 48px; background: var(--primary-gradient); color: white; font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 14px; margin: 0 auto 10px;" id="login-logo">?</div>
+            <h2 style="font-size:16px; font-weight:800; color:var(--text-main);">Koreksi Absen</h2>
+            <p style="color:var(--text-muted); font-size:11px; margin-bottom: 14px;">Pondok Pesantren Sidogiri</p>
             
-            <p style="font-size:10px; font-weight:bold; text-align:left; color:#888; margin-bottom:6px; letter-spacing: 0.5px;">PILIH DAERAH</p>
+            <p style="font-size:9px; font-weight:800; text-align:left; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">Pilih Daerah</p>
             <div class="alphabet-grid" id="alphabet-grid"></div>
 
-            <div class="input-group" style="margin-top: 18px;">
-                <label>PASSWORD</label>
-                <input type="password" id="password" placeholder="Masukkan password...">
+            <div style="text-align:left; margin-bottom:14px;">
+                <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password</label>
+                <input type="password" id="password" placeholder="Masukkan password..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
             </div>
             
-            <button class="btn-primary w-100 bounce-hover" style="padding:14px;" onclick="login()">Masuk Sistem ➔</button>
+            <button class="btn-act" style="background:var(--primary-gradient); color:white; width:100%; padding:12px; font-size:12px;" onclick="login()">Masuk Sistem ➔</button>
         </div>
     </div>
 
-    <!-- VIEW 1: UTAMA / ANTREAN & QR CODE -->
-    <div id="view-input" class="view">
-        <div class="header-app slide-down">
-            <div style="display:flex; gap:12px; align-items:center;">
-                <div class="avatar" id="nav-avatar">A</div>
-                <div>
-                    <h3 style="font-size:15px;">Surat Izin — Daerah <span id="nav-daerah">A</span></h3>
-                    <p style="font-size:11px; color:gray;">Pondok Pesantren Sidogiri</p>
-                </div>
-            </div>
-            <button class="btn-outline bounce-hover" style="padding: 6px 12px; font-size:11px;" onclick="openSettingsModal()">⚙️ Akun</button>
-        </div>
-
-        <div class="date-panel slide-down">
-            <div>
-                <div style="font-size:10px; color:gray;">Tanggal Surat (Hijriyah)</div>
-                <div id="hijri-date-display" style="font-size:15px; font-weight:bold; color:var(--text-main);">Memuat...</div>
-            </div>
-            <div class="hijri-adjuster">
-                <button class="bounce-hover" onclick="adjustHijri(-1)">-</button>
-                <span id="hijri-offset-val" style="font-size:12px; font-weight:bold; width:16px; text-align:center;">0</span>
-                <button class="bounce-hover" onclick="adjustHijri(1)">+</button>
-            </div>
-        </div>
-
-        <div class="stats-grid bounce-in">
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#e3f2fd; color:#1976d2;">👥</div>
-                <div><div class="stat-title">Master</div><div class="stat-value" id="count-master">0</div></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#fff3e0; color:#f57c00;">⏳</div>
-                <div><div class="stat-title">Antrean</div><div class="stat-value" id="count-antrean-top">0</div></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon" style="background:#e8f5e9; color:#388e3c;">📄</div>
-                <div><div class="stat-title">Arsip</div><div class="stat-value" id="count-saved">0</div></div>
-            </div>
-        </div>
-
-        <!-- TOMBOL UTAMA INPUT POPUP BOUNCE -->
-        <button class="btn-primary w-100 bounce-hover fade-in" style="padding: 15px; font-size: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, var(--primary), #0c9c74); box-shadow: 0 6px 20px rgba(10,122,92,0.3);" onclick="openInputModal()">
-            <span style="font-size: 18px;">📝</span>
-            <span>+ Input Surat Izin Sakit</span>
-        </button>
-
-        <!-- UTAMA: ANTREAN CETAK SURAT -->
-        <div class="panel border-left-green fade-in">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h3 class="panel-title" style="border:none; margin:0;">Antrean Cetak Surat</h3>
-                <button class="btn-primary bounce-hover" style="padding:8px 14px; font-size:11px;" onclick="cetakAntrean()">📱 QR Code (<span id="count-antrean">0</span>)</button>
-            </div>
-            
-            <div style="background:#e8f5e9; border:1px solid #a5d6a7; border-radius:10px; padding:10px 14px; margin-bottom:12px; font-size:11px; color:#1b5e20;">
-                MTQ: <b id="stat-mtq-count">0</b> | MQS: <b id="stat-mqs-count">0</b> | Est. Kertas: <b id="stat-total-kertas">0</b> Lembar A5
-            </div>
-
-            <div class="table-container">
-                <table id="table-antrean">
-                    <thead>
-                        <tr>
-                            <th>ID PPS</th>
-                            <th>NAMA SANTRI</th>
-                            <th>DOMISILI</th>
-                            <th>KET.</th>
-                            <th>AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="5" style="text-align:center; color:gray; padding:20px;">Antrean masih kosong. Klik "+ Input Surat Izin Sakit" diatas.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- ARSIP SESI CETAK -->
-        <div class="panel border-left-green fade-in">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h3 class="panel-title" style="border:none; margin:0; color:#555;">Arsip Sesi Cetak</h3>
-            </div>
-            <div class="table-container">
-                <table id="table-riwayat-cetak">
-                    <thead>
-                        <tr>
-                            <th>WAKTU / SESI</th>
-                            <th>JUMLAH</th>
-                            <th>TGL HIJRIYAH</th>
-                            <th>AKSI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="4" style="text-align:center; color:gray; padding:18px;">Belum ada arsip sesi cetak.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- VIEW 2: KOREKSI ABSEN -->
+    <!-- VIEW UTAMA: KOREKSI ABSEN -->
     <div id="view-koreksi" class="view">
-        <div class="header-app slide-down">
-            <h3 style="color:var(--primary); font-size:15px;">Koreksi Absen — Daerah <span id="koreksi-daerah">A</span></h3>
-            <button class="btn-outline bounce-hover" style="padding:6px 12px; font-size:11px;" onclick="fetchKoreksiDataRealtime()">🔄 Sync Data</button>
-        </div>
-
-        <div class="panel border-left-green fade-in">
-            <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
-                <input type="text" id="search-koreksi" placeholder="🔍 Cari Nama / ID / Kamar..." oninput="filterKoreksiTabel()">
+        <!-- COMPACT TOP DECK -->
+        <div class="top-deck slide-up">
+            <div class="header-compact">
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <div class="avatar" id="nav-avatar">A</div>
+                    <div>
+                        <h3 style="font-size:13px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
+                        <p style="font-size:10px; color:var(--text-muted); font-weight:600;" id="stat-progress-text">0 / 0 Santri Selesai</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:4px;">
+                    <button class="btn-act" style="background:#f1f5f9; color:var(--text-main);" onclick="fetchKoreksiDataRealtime()">🔄 Sync</button>
+                    <button class="btn-act" style="background:#ffe4e6; color:var(--alpha-color);" onclick="logout()">Keluar</button>
+                </div>
             </div>
 
-            <div class="table-container">
-                <table id="table-koreksi">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>Status</th>
-                            <th>ID PPS</th>
-                            <th>Nama Santri</th>
-                            <th>Domisili</th>
-                            <th>Jalsah</th>
-                            <th>S</th>
-                            <th>I</th>
-                            <th>A</th>
-                            <th>Tgl Sakit</th>
-                            <th>Tgl Izin</th>
-                            <th>Tgl Alpha</th>
-                            <th>Ket</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td colspan="14" style="text-align:center; padding:20px; color:gray;">Memuat data...</td></tr>
-                    </tbody>
-                </table>
+            <div class="progress-inline">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                </div>
+                <span style="font-size:11px; font-weight:800; color:var(--primary);" id="stat-percent">0%</span>
             </div>
         </div>
-    </div>
 
-    <!-- BOTTOM NAVIGATION BAR (MOBILE) -->
-    <nav class="bottom-nav">
-        <button class="nav-item active bounce-hover" id="nav-btn-input" onclick="switchTab('view-input')">
-            <span class="nav-icon">📝</span>
-            <span class="nav-label">Input Izin</span>
-        </button>
-        <button class="nav-item bounce-hover" id="nav-btn-koreksi" onclick="switchTab('view-koreksi')">
-            <span class="nav-icon">✅</span>
-            <span class="nav-label">Koreksi Absen</span>
-        </button>
-        <button class="nav-item bounce-hover" onclick="openSettingsModal()">
-            <span class="nav-icon">⚙️</span>
-            <span class="nav-label">Pengaturan</span>
-        </button>
-    </nav>
-
-    <!-- MODAL POPUP BOUNCE KHUSUS INPUT SURAT IZIN -->
-    <div id="modal-input-izin" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 15px;">
-        <div class="bounce-in" style="background: white; width: 100%; max-width: 440px; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
-            <div style="background: linear-gradient(135deg, #0a7a5c, #0c9c74); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h3 style="font-size: 15px; font-weight:bold;">Form Input Surat Izin Sakit</h3>
-                    <span style="font-size: 10px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;" id="modal-antrean-counter">Total Antrean: 0 Santri</span>
-                </div>
-                <button onclick="closeInputModal()" style="background:rgba(255,255,255,0.2); border:none; color:white; width:28px; height:28px; border-radius:50%; font-size:14px; cursor:pointer;" class="bounce-hover">✕</button>
+        <!-- SEARCH & FILTER ROW -->
+        <div class="controls-row slide-up">
+            <div class="search-box-mini">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="search-koreksi" placeholder="Cari Santri..." oninput="renderKoreksiList()">
             </div>
-            <div style="padding: 18px; display: flex; flex-direction: column;">
-                
-                <div class="input-group">
-                    <label>ID PPS SANTRI (SCAN / KETIK)</label>
-                    <input type="text" id="input-id-pps" placeholder="Ketik / Scan ID PPS lalu Enter..." oninput="handleModalIdInput()" onkeypress="checkEnterModal(event)">
-                </div>
-
-                <!-- CARD PREVIEW OTOMATIS SANTRI TERHUBUNG MASTER -->
-                <div id="modal-santri-preview" class="modal-preview-card hidden"></div>
-
-                <div class="input-group">
-                    <label>LAMA IZIN (HARI)</label>
-                    <input type="number" id="input-lama-izin" value="1" min="1" max="90" style="font-weight:bold;">
-                </div>
-                
-                <div class="input-group">
-                    <label>KETERANGAN SAKIT</label>
-                    <input type="text" id="input-ket" value="Sakit">
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button onclick="tambahAntreanModal()" class="btn-primary bounce-hover" style="flex:2; padding:12px;">+ Tambah Ke Antrean</button>
-                    <button onclick="closeInputModal()" class="btn-success bounce-hover" style="flex:1; padding:12px; background:#0284c7;">✓ Selesai</button>
-                </div>
+            <div class="filter-tabs">
+                <button class="tab-btn active" id="tab-all" onclick="setFilter('all')">Semua (<span id="count-all">0</span>)</button>
+                <button class="tab-btn" id="tab-belum" onclick="setFilter('belum')">Belum (<span id="count-belum">0</span>)</button>
+                <button class="tab-btn" id="tab-sudah" onclick="setFilter('sudah')">Selesai (<span id="count-sudah">0</span>)</button>
             </div>
+        </div>
+
+        <!-- LIST SANTRI CARDS -->
+        <div class="santri-list slide-up" id="santri-list-container">
+            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Memuat data dari pusat...</div>
         </div>
     </div>
 
     <!-- MODAL EDIT KOREKSI ABSEN -->
-    <div id="modal-edit-koreksi" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 15px;">
-        <div class="bounce-in" style="background: white; width: 100%; max-width: 460px; max-height: 88vh; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
-            <div style="background: linear-gradient(135deg, #059669, #047857); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="font-size: 15px; font-weight:bold;">Form Koreksi Absensi</h3>
-                <button onclick="closeEditModal()" style="background:rgba(255,255,255,0.2); border:none; color:white; width:28px; height:28px; border-radius:50%; font-size:14px; cursor:pointer;">✕</button>
+    <div id="modal-edit-koreksi">
+        <div class="modal-content slide-up">
+            <div class="modal-header">
+                <div>
+                    <div style="font-size:9px; opacity:0.8; font-weight:800; text-transform:uppercase;">Edit Koreksi Santri</div>
+                    <div style="font-size:14px; font-weight:800;" id="edit-nama">Nama Santri</div>
+                </div>
+                <button onclick="closeEditModal()" style="background:rgba(255,255,255,0.2); color:white; border:none; width:26px; height:26px; border-radius:50%; font-size:12px; font-weight:bold;">✕</button>
             </div>
-            <div style="overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
-                <div style="background: #ecfdf5; border:1px solid #a7f3d0; border-radius: 12px; padding: 12px; font-size: 12px;">
-                    <b id="edit-nama" style="font-size:14px; color:#065f46;">Nama Santri</b><br>
-                    <span style="color:#047857;">ID PPS: <b id="edit-pps">-</b> | Domisili: <b id="edit-domisili">-</b></span>
+
+            <div class="modal-body">
+                <div style="font-size:11px; color:var(--text-muted); font-weight:600; background:#f1f5f9; padding:6px 10px; border-radius:8px;">
+                    ID PPS: <b id="edit-pps" style="color:var(--text-main);">-</b> | Kamar: <b id="edit-domisili" style="color:var(--primary);">-</b>
                 </div>
 
-                <div style="background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 12px;">
-                    <div style="font-weight:bold; font-size:12px; color:#e11d48; margin-bottom:6px;">Tanggal Alpha (A)</div>
-                    <div id="list-alpha"></div>
-                    <div style="display:flex; gap:6px; margin-top:8px;">
-                        <input type="number" id="input-add-alpha" min="1" max="31" placeholder="Tgl" style="width:65px;">
-                        <button onclick="tambahTanggal('alpha')" class="btn-primary bounce-hover" style="padding:6px 12px; font-size:11px;">+ Alpha</button>
+                <!-- ALPHA -->
+                <div class="section-box">
+                    <div class="section-title" style="color:var(--alpha-color);">
+                        <span>Tanggal Alpha (A)</span>
+                        <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); padding:2px 6px; border-radius:4px; font-weight:800;">+ Hari Ini</button>
+                    </div>
+                    <div class="chips-wrapper" id="chips-alpha"></div>
+                    <div class="quick-input-group">
+                        <input type="number" id="input-add-alpha" min="1" max="31" placeholder="Tgl">
+                        <button onclick="tambahTanggal('alpha')" class="btn-add-chip" style="background:var(--alpha-color);">+ Alpha</button>
                     </div>
                 </div>
 
-                <div style="background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 12px;">
-                    <div style="font-weight:bold; font-size:12px; color:#d97706; margin-bottom:6px;">Tanggal Izin (I)</div>
-                    <div id="list-izin"></div>
-                    <div style="display:flex; gap:6px; margin-top:8px;">
-                        <input type="number" id="input-add-izin" min="1" max="31" placeholder="Tgl" style="width:65px;">
-                        <button onclick="tambahTanggal('izin')" class="btn-primary bounce-hover" style="padding:6px 12px; font-size:11px;">+ Izin</button>
+                <!-- IZIN -->
+                <div class="section-box">
+                    <div class="section-title" style="color:var(--izin-color);">
+                        <span>Tanggal Izin (I)</span>
+                        <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); padding:2px 6px; border-radius:4px; font-weight:800;">+ Hari Ini</button>
+                    </div>
+                    <div class="chips-wrapper" id="chips-izin"></div>
+                    <div class="quick-input-group">
+                        <input type="number" id="input-add-izin" min="1" max="31" placeholder="Tgl">
+                        <button onclick="tambahTanggal('izin')" class="btn-add-chip" style="background:var(--izin-color);">+ Izin</button>
                     </div>
                 </div>
 
-                <div style="background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 12px;">
-                    <div style="font-weight:bold; font-size:12px; color:#0284c7; margin-bottom:6px;">Tanggal Sakit (S)</div>
-                    <div id="list-sakit"></div>
-                    <div style="display:flex; gap:6px; margin-top:8px;">
-                        <input type="number" id="input-add-sakit" min="1" max="31" placeholder="Tgl" style="width:65px;">
-                        <button onclick="tambahTanggal('sakit')" class="btn-primary bounce-hover" style="padding:6px 12px; font-size:11px;">+ Sakit</button>
+                <!-- SAKIT -->
+                <div class="section-box">
+                    <div class="section-title" style="color:var(--sakit-color);">
+                        <span>Tanggal Sakit (S)</span>
+                        <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); padding:2px 6px; border-radius:4px; font-weight:800;">+ Hari Ini</button>
+                    </div>
+                    <div class="chips-wrapper" id="chips-sakit"></div>
+                    <div class="quick-input-group">
+                        <input type="number" id="input-add-sakit" min="1" max="31" placeholder="Tgl">
+                        <button onclick="tambahTanggal('sakit')" class="btn-add-chip" style="background:var(--sakit-color);">+ Sakit</button>
                     </div>
                 </div>
 
                 <div>
-                    <label style="font-size:11px; font-weight:bold; color:gray;">Keterangan Taklimda:</label>
-                    <input type="text" id="edit-ket" placeholder="Contoh: Haddam, Pulang, dll..">
+                    <label style="font-size:10px; font-weight:800; color:var(--text-muted); display:block; margin-bottom:4px;">KETERANGAN TAKLIMDA</label>
+                    <input type="text" id="edit-ket" placeholder="Contoh: Haddam, Pulang, dll.." style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:11px; outline:none;">
                 </div>
-            </div>
-            <div style="padding: 12px 18px; background: #f9fafb; display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #eee;">
-                <button onclick="closeEditModal()" class="btn-danger bounce-hover" style="padding:8px 16px;">Batal</button>
-                <button onclick="saveEditModal()" class="btn-success bounce-hover" style="padding:8px 16px;">Simpan & Sync</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- MODAL PENGATURAN -->
-    <div id="modal-settings" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 15px;">
-        <div class="bounce-in" style="background: white; width: 100%; max-width: 320px; border-radius: 20px; padding: 22px; text-align: center; box-shadow:0 20px 40px rgba(0,0,0,0.2);">
-            <h3 style="margin-bottom: 12px; font-size:16px;">Pengaturan Akun</h3>
-            <p style="font-size: 12px; color: gray; margin-bottom: 20px;">Daerah Aktif: <b id="settings-daerah">A</b></p>
-            <button class="btn-primary w-100 bounce-hover" style="margin-bottom: 10px; background:#d97706;" onclick="resetSistem()">🔄 Reset Antrean Lokal</button>
-            <button class="btn-danger w-100 bounce-hover" style="margin-bottom: 10px;" onclick="logout()">Keluar / Ganti Daerah</button>
-            <button class="btn-outline w-100 bounce-hover" onclick="closeSettingsModal()">Tutup</button>
-        </div>
-    </div>
-
-    <!-- MODAL POPUP QR CODE -->
-    <div id="modal-qr-code" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.75); backdrop-filter:blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 15px;">
-        <div class="bounce-in" style="background: white; width: 100%; max-width: 340px; border-radius: 20px; padding: 22px; text-align: center; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
-            <h3 style="color: var(--primary); font-size: 16px; margin-bottom:4px;">QR Code Antrean</h3>
-            <p style="font-size: 11px; color: gray; margin-bottom: 12px;">Scan di Komputer Client untuk cetak A5</p>
-            <div id="qrcode-box" style="display: flex; justify-content: center; background: #fff; padding: 12px; border: 2px dashed var(--primary); border-radius: 12px; margin-bottom: 12px; min-height: 200px;"></div>
-            <div style="font-size: 12px; font-weight: bold;" id="qr-batch-info">QR 1 dari 1</div>
-            <div style="display: flex; gap: 8px; justify-content: center; margin-top: 15px;">
-                <button class="btn-outline bounce-hover" onclick="prevQRBatch()">◄ Prev</button>
-                <button class="btn-danger bounce-hover" onclick="closeQRModal()">Tutup</button>
-                <button class="btn-primary bounce-hover" onclick="nextQRBatch()">Next ►</button>
+                <div style="display:flex; gap:6px; margin-top:4px;">
+                    <button onclick="closeEditModal()" style="flex:1; padding:10px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:10px; font-size:12px;">Batal</button>
+                    <button onclick="saveEditModal()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:10px; font-size:12px;">Simpan & Sync ➔</button>
+                </div>
             </div>
         </div>
     </div>
@@ -471,22 +278,13 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1ecMJ8KBdbsNhuJCm_eYrRH2ATxZH7sn73GV-B19JoxKLNMrS8BCS8fZNnHBcqjM/exec";
 
     let currentUser = ""; 
-    let hijriOffset = 0; 
-    let masterSantri = {}; 
     let masterKoreksi = [];
-    let dbIzin = JSON.parse(localStorage.getItem('dbIzin')) || [];       
-    let riwayatCetak = JSON.parse(localStorage.getItem('riwayatCetak')) || []; 
     let activeEditIndex = null;
+    let activeFilter = 'all';
+    let tempSakit = [], tempIzin = [], tempAlpha = [];
 
-    let qrBatches = [];
-    let currentQRIndex = 0;
-
-    document.addEventListener("DOMContentLoaded", async () => {
+    document.addEventListener("DOMContentLoaded", () => {
         generateAlphabetGrid();
-        updateHijriDate();
-        masterSantri = await IDB.get();
-        let countMaster = document.getElementById('count-master');
-        if(countMaster) countMaster.innerText = Object.keys(masterSantri).length;
         checkSavedLogin();
     });
 
@@ -494,31 +292,11 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         let savedDaerah = localStorage.getItem('taklimda_daerah');
         if (savedDaerah) {
             currentUser = savedDaerah;
-            const setElem = (id, val) => { let el = document.getElementById(id); if(el) el.innerText = val; };
-            setElem('nav-avatar', currentUser);
-            setElem('nav-daerah', currentUser);
-            setElem('koreksi-daerah', currentUser);
-            setElem('settings-daerah', currentUser);
+            document.getElementById('nav-avatar').innerText = currentUser;
+            document.getElementById('koreksi-daerah').innerText = currentUser;
             
             document.getElementById('view-login').classList.remove('active');
-            switchTab('view-input');
-        }
-    }
-
-    function switchTab(viewId) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.getElementById(viewId).classList.add('active');
-
-        document.getElementById('nav-btn-input').classList.remove('active');
-        document.getElementById('nav-btn-koreksi').classList.remove('active');
-
-        if (viewId === 'view-input') {
-            document.getElementById('nav-btn-input').classList.add('active');
-            renderAntrean();
-            renderRiwayatCetak();
-            fetchMasterDataRealtime();
-        } else if (viewId === 'view-koreksi') {
-            document.getElementById('nav-btn-koreksi').classList.add('active');
+            document.getElementById('view-koreksi').classList.add('active');
             fetchKoreksiDataRealtime();
         }
     }
@@ -528,138 +306,19 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         if (!t) return;
         t.innerText = msg;
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2500);
-    }
-
-    // ============================================================================
-    // MODAL INPUT POPUP CONTROL
-    // ============================================================================
-    function openInputModal() {
-        document.getElementById('modal-input-izin').style.display = 'flex';
-        let idInput = document.getElementById('input-id-pps');
-        if(idInput) {
-            idInput.value = '';
-            idInput.focus();
-        }
-        document.getElementById('modal-santri-preview').classList.add('hidden');
-        updateModalCounter();
-    }
-
-    function closeInputModal() {
-        document.getElementById('modal-input-izin').style.display = 'none';
-    }
-
-    function updateModalCounter() {
-        let counter = document.getElementById('modal-antrean-counter');
-        if(counter) counter.innerText = `Total Antrean: ${dbIzin.length} Santri`;
-    }
-
-    function handleModalIdInput() {
-        let idInput = document.getElementById('input-id-pps');
-        let prev = document.getElementById('modal-santri-preview');
-        if(!idInput || !prev) return;
-        let id = idInput.value.trim();
-        if(id && masterSantri[id]) {
-            let dataS = masterSantri[id];
-            let nama = window.getValPeka(dataS, ['nama', 'nama_santri', 'namasantri', 'nama_lengkap']);
-            let domisili = window.getValPeka(dataS, ['domisili', 'daerah', 'kamar']);
-            prev.innerHTML = `<b>✅ ${nama}</b><br>Domisili/Kamar: <b>${domisili}</b>`;
-            prev.classList.remove('hidden');
-        } else {
-            prev.classList.add('hidden');
-        }
-    }
-
-    function checkEnterModal(e) {
-        if (e.key === 'Enter') tambahAntreanModal();
-    }
-
-    function tambahAntreanModal() {
-        let idInput = document.getElementById('input-id-pps');
-        if(!idInput) return;
-        let id = idInput.value.trim();
-        if(!id) return showToast("Masukkan ID PPS terlebih dahulu!");
-        if(!masterSantri[id]) return showToast("❌ ID tidak ditemukan di Master Santri!");
-
-        let ketElem = document.getElementById('input-ket');
-        let ket = ketElem ? ketElem.value.trim() : "Sakit";
-        let lamaElem = document.getElementById('input-lama-izin');
-        let lama = lamaElem ? (parseInt(lamaElem.value) || 1) : 1;
-        let d = new Date();
-        let namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-
-        let dataS = masterSantri[id];
-        let nama = window.getValPeka(dataS, ['nama', 'nama_santri', 'namasantri', 'nama_lengkap']);
-        let domisili = window.getValPeka(dataS, ['domisili', 'daerah', 'kamar']);
-
-        let record = {
-            "ID PPS": id,
-            "NAMA": nama,
-            "DOMISILI": domisili,
-            "RawData": dataS, 
-            "Keterangan Sakit": ket,
-            "Lama Izin": lama,
-            "Tanggal Cetak": d.getDate() + " " + namaBulan[d.getMonth()] + " " + d.getFullYear(),
-            "Tgl Hijriyah": updateHijriDate()
-        };
-
-        dbIzin.push(record);
-        localStorage.setItem('dbIzin', JSON.stringify(dbIzin));
-
-        fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'saveIzin', data: record })
-        }).catch(err => console.error(err));
-
-        idInput.value = '';
-        idInput.focus();
-        document.getElementById('modal-santri-preview').classList.add('hidden');
-        
-        renderAntrean();
-        updateModalCounter();
-        showToast(`✅ ${nama} masuk antrean!`);
-    }
-
-    // ============================================================================
-    // REALTIME SYNC MASTER SANTRI SPREADSHEET (INDEXEDDB SAFE STORAGE)
-    // ============================================================================
-    async function fetchMasterDataRealtime() {
-        showToast("Sync Master Santri...");
-        try {
-            let res = await fetch(APPS_SCRIPT_URL + '?action=getMaster');
-            let rawList = await res.json();
-
-            if (Array.isArray(rawList) && rawList.length > 0) {
-                masterSantri = {};
-                rawList.forEach(row => {
-                    let idKey = window.getValPeka(row, ['id_pps', 'idpps', 'id', 'nis', 'no_induk']);
-                    if (idKey) masterSantri[String(idKey).trim()] = row;
-                });
-                
-                await IDB.set(masterSantri);
-
-                let countMaster = document.getElementById('count-master');
-                if (countMaster) countMaster.innerText = Object.keys(masterSantri).length;
-                showToast(`Master Santri terhubung (${Object.keys(masterSantri).length})`);
-            }
-        } catch(e) {
-            console.error("Gagal sync master:", e);
-            let countMaster = document.getElementById('count-master');
-            if (countMaster) countMaster.innerText = Object.keys(masterSantri).length;
-        }
+        setTimeout(() => t.classList.remove('show'), 2200);
     }
 
     async function fetchKoreksiDataRealtime() {
-        showToast("Memuat Koreksi Absen...");
-        let tbody = document.querySelector('#table-koreksi tbody');
-        if (tbody) tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:18px; color:gray;">Memuat data...</td></tr>`;
+        showToast("Memuat data...");
+        let container = document.getElementById('santri-list-container');
 
         try {
-            let res = await fetch(APPS_SCRIPT_URL + '?action=getKoreksi');
+            let res = await fetch(APPS_SCRIPT_URL);
             let rawData = await res.json();
 
             if (!Array.isArray(rawData) || rawData.length === 0) {
-                if (tbody) tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:18px; color:gray;">Sheet Koreksi_Absen di Spreadsheet masih kosong.</td></tr>`;
+                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Data masih kosong.</div>`;
                 return;
             }
 
@@ -680,10 +339,12 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
             });
 
             masterKoreksi = filtered.map((r, i) => {
-                let tAlpha = parseDates(window.getValPeka(r, ['tgl_alpha', 'tglalpha', 'tanggal_alpha', 'tgl_alpa', 'alpha']));
+                let tAlpha = parseDates(window.getValPeka(r, ['tgl_alpha', 'tglalpha', 'tanggal_alpha', 'alpha']));
                 let tIzin  = parseDates(window.getValPeka(r, ['tgl_izin', 'tglizin', 'tanggal_izin', 'izin']));
                 let tSakit = parseDates(window.getValPeka(r, ['tgl_sakit', 'tglsakit', 'tanggal_sakit', 'sakit']));
                 let statusK = window.getValPeka(r, ['status_koreksi', 'status', 'koreksi']) || 'Belum Dikoreksi';
+
+                let isVerified = (statusK.toLowerCase().includes('sesuai') || statusK.toLowerCase().includes('benar') || statusK.toLowerCase().includes('sudah')) && !statusK.toLowerCase().includes('belum');
 
                 return {
                     ...r,
@@ -698,57 +359,134 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
                     _tglSakitArr: tSakit,
                     _keterangan: window.getValPeka(r, ['keterangan_taklimda', 'keterangan', 'ket']) || '-',
                     _statusKoreksi: statusK,
-                    _isEdited: statusK === 'Sudah Dikoreksi'
+                    _isDone: isVerified
                 };
             });
 
-            renderKoreksi();
-            showToast(`Loaded ${masterKoreksi.length} Koreksi Santri`);
+            updateDashboardStats();
+            renderKoreksiList();
+            showToast(`Terhubung: ${masterKoreksi.length} Santri`);
         } catch(e) {
-            console.error("Gagal load koreksi:", e);
-            showToast("Gagal memuat data dari Spreadsheet!");
+            console.error(e);
+            showToast("Gagal mengambil data dari pusat!");
         }
     }
 
-    function renderKoreksi() {
-        let tbody = document.querySelector('#table-koreksi tbody');
-        if(!tbody) return;
-        tbody.innerHTML = "";
-        
-        if(masterKoreksi.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="14" style="text-align:center; padding:18px; color:gray;">Tidak ada data santri daerah ${currentUser}.</td></tr>`;
-            return;
-        }
+    function updateDashboardStats() {
+        let total = masterKoreksi.length;
+        let selesai = masterKoreksi.filter(x => x._isDone).length;
+        let belum = total - selesai;
+        let percent = total > 0 ? Math.round((selesai / total) * 100) : 0;
 
-        masterKoreksi.forEach((item, index) => {
-            let statusBadge = item._isEdited ? 
-                `<span class="badge-status badge-sudah">Sudah</span>` : 
-                `<span class="badge-status badge-belum">Belum</span>`;
+        document.getElementById('stat-progress-text').innerText = `${selesai} / ${total} Santri Selesai`;
+        document.getElementById('stat-percent').innerText = `${percent}%`;
+        document.getElementById('progress-bar-fill').style.width = `${percent}%`;
 
-            let tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${statusBadge}</td>
-                <td><b>${item._idPps}</b></td>
-                <td>${item._nama}</td>
-                <td><span style="background:#e0f2ec; padding:2px 6px; border-radius:4px; font-weight:bold; color:var(--primary);">${item._domisili}</span></td>
-                <td>${item._jalsah}</td>
-                <td style="text-align:center; font-weight:bold; color:var(--primary);">${item._tglSakitArr.length}</td>
-                <td style="text-align:center; font-weight:bold; color:#d97706;">${item._tglIzinArr.length}</td>
-                <td style="text-align:center; font-weight:bold; color:red;">${item._tglAlphaArr.length}</td>
-                <td>${item._tglSakitArr.length ? item._tglSakitArr.join(', ') : '-'}</td>
-                <td>${item._tglIzinArr.length ? item._tglIzinArr.join(', ') : '-'}</td>
-                <td>${item._tglAlphaArr.length ? item._tglAlphaArr.join(', ') : '-'}</td>
-                <td>${item._keterangan}</td>
-                <td><button class="btn-primary bounce-hover" style="padding:4px 8px; font-size:10px;" onclick="bukaModalKoreksi(${index})">Edit</button></td>
-            `;
-            tbody.appendChild(tr);
-        });
+        document.getElementById('count-all').innerText = total;
+        document.getElementById('count-belum').innerText = belum;
+        document.getElementById('count-sudah').innerText = selesai;
+    }
+
+    function setFilter(filterType) {
+        activeFilter = filterType;
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${filterType}`).classList.add('active');
+        renderKoreksiList();
+    }
+
+	function renderKoreksiList() {
+		let container = document.getElementById('santri-list-container');
+		let searchVal = document.getElementById('search-koreksi').value.toUpperCase().trim();
+		container.innerHTML = "";
+
+		let listToShow = masterKoreksi.filter(item => {
+			let matchFilter = true;
+			if (activeFilter === 'belum') matchFilter = !item._isDone;
+			if (activeFilter === 'sudah') matchFilter = item._isDone;
+
+			let matchSearch = true;
+			if (searchVal) {
+				let haystack = `${item._nama} ${item._idPps} ${item._domisili}`.toUpperCase();
+				matchSearch = haystack.includes(searchVal);
+			}
+
+			return matchFilter && matchSearch;
+		});
+
+		if (listToShow.length === 0) {
+			container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data santri.</div>`;
+			return;
+		}
+
+		listToShow.forEach(item => {
+			let st = item._statusKoreksi.toLowerCase();
+			let badgeHtml = `<span class="badge-status badge-belum">Belum</span>`;
+			
+			// Pengecekan presisi: Pastikan tidak mengandung kata "belum"
+			if (st.includes('sesuai') || st.includes('benar')) {
+				badgeHtml = `<span class="badge-status badge-benar">✔ Sesuai</span>`;
+			} else if ((st.includes('sudah') || st.includes('dikoreksi')) && !st.includes('belum')) {
+				badgeHtml = `<span class="badge-status badge-koreksi">✏ Dikoreksi</span>`;
+			}
+
+			let card = document.createElement('div');
+			card.className = 'santri-card fade-in';
+
+			card.innerHTML = `
+				<div class="card-top">
+					<div>
+						<div class="santri-nama">${item._nama}</div>
+						<div class="santri-meta">ID: <b>${item._idPps}</b> • ${item._domisili}</div>
+					</div>
+					${badgeHtml}
+				</div>
+
+				<div class="pills-group">
+					<span class="pill-tag pill-sakit">Sakit: ${item._tglSakitArr.length}</span>
+					<span class="pill-tag pill-izin">Izin: ${item._tglIzinArr.length}</span>
+					<span class="pill-tag pill-alpha">Alpha: ${item._tglAlphaArr.length}</span>
+				</div>
+
+				<div class="card-actions">
+					<button class="btn-act btn-verify" onclick="markAsSesuai(${item._id})">✔ Sesuai / Benar</button>
+					<button class="btn-act btn-edit-card" onclick="bukaModalKoreksi(${item._id})">✏ Edit Tanggal</button>
+				</div>
+			`;
+			container.appendChild(card);
+		});
+	}
+
+    function markAsSesuai(index) {
+        const item = masterKoreksi[index];
+        if (!item) return;
+
+        item._statusKoreksi = 'Sesuai (Benar)';
+        item._isDone = true;
+
+        showToast("Mengirim data ke pusat...");
+
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'updateKoreksi',
+                data: {
+                    _rowIndex: item._rowIndex,
+                    tglSakit: item._tglSakitArr.join(', '),
+                    tglIzin: item._tglIzinArr.join(', '),
+                    tglAlpha: item._tglAlphaArr.join(', '),
+                    keterangan: item._keterangan !== '-' ? item._keterangan : '',
+                    status: 'Sesuai (Benar)'
+                }
+            })
+        }).then(() => showToast("Data telah diperbarui"))
+          .catch(err => console.error(err));
+
+        updateDashboardStats();
+        renderKoreksiList();
     }
 
     function generateAlphabetGrid() {
         const grid = document.getElementById('alphabet-grid');
-        if (!grid) return;
         grid.innerHTML = "";
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(letter => {
             let btn = document.createElement('button');
@@ -758,209 +496,55 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
                 document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 currentUser = letter;
-                let logo = document.getElementById('login-logo');
-                if(logo) logo.innerText = letter;
+                document.getElementById('login-logo').innerText = letter;
             };
             grid.appendChild(btn);
         });
     }
 
-    function login() {
-        const pass = document.getElementById('password').value;
+    async function login() {
+        const passInput = document.getElementById('password').value.trim();
         if (!currentUser) return showToast("Pilih Abjad Daerah dulu!");
-        if (pass !== "Taklimda") return showToast("Password salah!");
-        
-        localStorage.setItem('taklimda_daerah', currentUser);
-        const setElem = (id, val) => { let el = document.getElementById(id); if(el) el.innerText = val; };
-        setElem('nav-avatar', currentUser);
-        setElem('nav-daerah', currentUser);
-        setElem('koreksi-daerah', currentUser);
-        setElem('settings-daerah', currentUser);
-        
-        document.getElementById('view-login').classList.remove('active');
-        switchTab('view-input');
+        if (!passInput) return showToast("Masukkan password!");
+
+        showToast("Memeriksa kata sandi...");
+
+        try {
+            let res = await fetch(APPS_SCRIPT_URL + "?action=getUsers");
+            let users = await res.json();
+
+            let foundUser = users.find(u => u.daerah === currentUser);
+            let validPassword = foundUser ? foundUser.password : "Taklimda";
+
+            if (passInput !== validPassword) {
+                return showToast("❌ Password Salah!");
+            }
+
+            localStorage.setItem('taklimda_daerah', currentUser);
+            document.getElementById('nav-avatar').innerText = currentUser;
+            document.getElementById('koreksi-daerah').innerText = currentUser;
+            
+            document.getElementById('view-login').classList.remove('active');
+            document.getElementById('view-koreksi').classList.add('active');
+            fetchKoreksiDataRealtime();
+
+        } catch(err) {
+            if (passInput === "Taklimda") {
+                localStorage.setItem('taklimda_daerah', currentUser);
+                document.getElementById('view-login').classList.remove('active');
+                document.getElementById('view-koreksi').classList.add('active');
+                fetchKoreksiDataRealtime();
+            } else {
+                showToast("Gagal verifikasi kata sandi!");
+            }
+        }
     }
 
     function logout() {
         localStorage.removeItem('taklimda_daerah');
         currentUser = "";
-        closeSettingsModal();
+        document.getElementById('view-koreksi').classList.remove('active');
         document.getElementById('view-login').classList.add('active');
-    }
-
-    function resetSistem() {
-        if (confirm("Reset seluruh Antrean lokal?")) {
-            localStorage.removeItem('dbIzin');
-            localStorage.removeItem('riwayatCetak');
-            dbIzin = [];
-            riwayatCetak = [];
-            renderAntrean();
-            renderRiwayatCetak();
-            closeSettingsModal();
-            showToast("Antrean lokal dibersihkan!");
-        }
-    }
-
-    function openSettingsModal() { document.getElementById('modal-settings').style.display = 'flex'; }
-    function closeSettingsModal() { document.getElementById('modal-settings').style.display = 'none'; }
-
-    function updateHijriDate() {
-        let date = new Date();
-        if (date.getHours() >= 18) date.setDate(date.getDate() + 1);
-        date.setDate(date.getDate() + hijriOffset);
-
-        let options = { calendar: 'islamic', day: 'numeric', month: 'long', year: 'numeric' };
-        let formatter = new Intl.DateTimeFormat('id-ID-u-ca-islamic', options);
-        let rawHijri = formatter.format(date);
-        if (rawHijri.endsWith(' H')) rawHijri = rawHijri.substring(0, rawHijri.length - 2).trim();
-        let hijriStr = rawHijri + " H";
-        
-        let disp = document.getElementById('hijri-date-display');
-        let offVal = document.getElementById('hijri-offset-val');
-        if(disp) disp.innerText = hijriStr;
-        if(offVal) offVal.innerText = hijriOffset;
-        return hijriStr; 
-    }
-
-    function adjustHijri(val) {
-        hijriOffset += val;
-        updateHijriDate();
-    }
-
-    function renderAntrean() {
-        let tbody = document.querySelector('#table-antrean tbody');
-        if(!tbody) return;
-        tbody.innerHTML = "";
-        
-        if(dbIzin.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:gray; padding:18px;">Antrean masih kosong. Klik "+ Input Surat Izin Sakit" diatas.</td></tr>`;
-        } else {
-            dbIzin.forEach((item, index) => {
-                tbody.innerHTML += `
-                <tr class="fade-in">
-                    <td><b>${item['ID PPS']}</b></td>
-                    <td>${item.NAMA}</td>
-                    <td><span style="background:#e0f2ec; padding:2px 6px; border-radius:4px; font-weight:bold; color:var(--primary);">${item.DOMISILI}</span></td>
-                    <td>${item['Keterangan Sakit']}</td>
-                    <td><button class="btn-danger bounce-hover" style="padding:4px 8px; font-size:10px;" onclick="hapusAntrean(${index})">Hapus</button></td>
-                </tr>`;
-            });
-        }
-        
-        let countMtq = 0, countMqs = 0;
-        dbIzin.forEach(item => {
-            let kat = (window.getValPeka(item.RawData, ['kategori']) || "").toUpperCase();
-            if (kat.includes("MQS")) countMqs++; else countMtq++;
-        });
-
-        document.getElementById('stat-mtq-count').innerText = countMtq;
-        document.getElementById('stat-mqs-count').innerText = countMqs;
-        document.getElementById('stat-total-kertas').innerText = countMtq + Math.ceil(countMqs / 2);
-
-        document.getElementById('count-antrean').innerText = dbIzin.length;
-        document.getElementById('count-antrean-top').innerText = dbIzin.length;
-        document.getElementById('count-saved').innerText = riwayatCetak.reduce((acc, b) => acc + b.items.length, 0) + dbIzin.length;
-    }
-
-    function hapusAntrean(idx) {
-        dbIzin.splice(idx, 1);
-        localStorage.setItem('dbIzin', JSON.stringify(dbIzin));
-        renderAntrean();
-        updateModalCounter();
-    }
-
-    function cetakAntrean() {
-        if(dbIzin.length === 0) return showToast("Antrean cetak kosong!");
-        generateQRForItems(dbIzin);
-
-        let d = new Date();
-        let batchObj = {
-            batchId: "BATCH-" + d.getTime(),
-            waktuSesi: d.toLocaleString('id-ID'),
-            tglHijriyah: updateHijriDate(),
-            daerah: currentUser,
-            items: [...dbIzin]
-        };
-
-        riwayatCetak.push(batchObj);
-        dbIzin = [];
-        localStorage.setItem('dbIzin', JSON.stringify(dbIzin));
-        localStorage.setItem('riwayatCetak', JSON.stringify(riwayatCetak));
-
-        renderAntrean();
-        renderRiwayatCetak();
-        updateModalCounter();
-    }
-
-    function generateQRForItems(itemsList) {
-        const CHUNK_SIZE = 20;
-        qrBatches = [];
-
-        let compactList = itemsList.map(item => {
-            let raw = item.RawData || {};
-            return [
-                item['ID PPS'] || '',
-                item.NAMA || '',
-                item.DOMISILI || '',
-                window.getValPeka(raw, ['kategori']) || '',
-                window.getValPeka(raw, ['marhalah', 'jilid']) || '',
-                window.getValPeka(raw, ['jalsah']) || '',
-                window.getValPeka(raw, ['kelas_kitab']) || '',
-                window.getValPeka(raw, ['majlis_kitab']) || '',
-                item['Keterangan Sakit'] || 'Sakit',
-                item['Lama Izin'] || 1
-            ];
-        });
-
-        for (let i = 0; i < compactList.length; i += CHUNK_SIZE) {
-            qrBatches.push(compactList.slice(i, i + CHUNK_SIZE));
-        }
-
-        currentQRIndex = 0;
-        renderQRBatch();
-        document.getElementById('modal-qr-code').style.display = 'flex';
-    }
-
-    function renderQRBatch() {
-        if (!qrBatches.length) return;
-        const qrBox = document.getElementById('qrcode-box');
-        qrBox.innerHTML = '';
-        document.getElementById('qr-batch-info').innerText = `QR ${currentQRIndex + 1} dari ${qrBatches.length}`;
-
-        new QRCode(qrBox, {
-            text: JSON.stringify(qrBatches[currentQRIndex]),
-            width: 180,
-            height: 180,
-            correctLevel: QRCode.CorrectLevel.L
-        });
-    }
-
-    function nextQRBatch() { if (currentQRIndex < qrBatches.length - 1) { currentQRIndex++; renderQRBatch(); } }
-    function prevQRBatch() { if (currentQRIndex > 0) { currentQRIndex--; renderQRBatch(); } }
-    function closeQRModal() { document.getElementById('modal-qr-code').style.display = 'none'; }
-
-    function renderRiwayatCetak() {
-        let tbody = document.querySelector('#table-riwayat-cetak tbody');
-        if(!tbody) return;
-        tbody.innerHTML = "";
-        
-        if(riwayatCetak.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:gray; padding:18px;">Belum ada arsip.</td></tr>`;
-        } else {
-            riwayatCetak.forEach((batch, index) => {
-                tbody.innerHTML += `
-                <tr class="fade-in">
-                    <td><b>${batch.waktuSesi}</b></td>
-                    <td>${batch.items.length} Surat</td>
-                    <td>${batch.tglHijriyah}</td>
-                    <td><button class="btn-primary bounce-hover" style="padding:4px 8px; font-size:10px;" onclick="printUlangBatch(${index})">📱 QR</button></td>
-                </tr>`;
-            });
-        }
-    }
-
-    function printUlangBatch(index) {
-        if(riwayatCetak[index] && riwayatCetak[index].items) generateQRForItems(riwayatCetak[index].items);
     }
 
     function bukaModalKoreksi(index) {
@@ -977,33 +561,37 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         document.getElementById('edit-domisili').innerText = item._domisili || '-';
         document.getElementById('edit-ket').value = item._keterangan !== '-' ? item._keterangan : '';
 
-        renderModalItems();
+        renderChips();
         document.getElementById('modal-edit-koreksi').style.display = 'flex';
     }
 
-    let tempSakit = [], tempIzin = [], tempAlpha = [];
-
-    function renderModalItems() {
-        const setList = (id, arr, cat) => {
-            let el = document.getElementById(id);
+    function renderChips() {
+        const setChips = (containerId, arr, type, chipClass) => {
+            let el = document.getElementById(containerId);
             if (!el) return;
-            el.innerHTML = arr.length === 0 ? `<div style="font-size:11px; color:gray;">Tidak ada</div>` :
-                arr.map(tgl => `<span style="display:inline-block; background:#fff; border:1px solid #ccc; padding:2px 6px; border-radius:4px; font-size:11px; margin:2px;">Tgl ${tgl} <b onclick="hapusTanggal('${cat}', ${tgl})" style="color:red; cursor:pointer;">×</b></span>`).join('');
+            el.innerHTML = arr.length === 0 ? `<span style="font-size:10px; color:var(--text-muted);">Tidak ada</span>` :
+                arr.map(tgl => `
+                    <span class="chip ${chipClass}">
+                        Tgl ${tgl}
+                        <span class="chip-del" onclick="hapusTanggal('${type}', ${tgl})">✕</span>
+                    </span>
+                `).join('');
         };
-        setList('list-alpha', tempAlpha, 'alpha');
-        setList('list-izin', tempIzin, 'izin');
-        setList('list-sakit', tempSakit, 'sakit');
+
+        setChips('chips-alpha', tempAlpha, 'alpha', 'chip-alpha');
+        setChips('chips-izin', tempIzin, 'izin', 'chip-izin');
+        setChips('chips-sakit', tempSakit, 'sakit', 'chip-sakit');
     }
 
-    function hapusTanggal(cat, tgl) {
-        if (cat === 'alpha') tempAlpha = tempAlpha.filter(x => x !== tgl);
-        if (cat === 'izin') tempIzin = tempIzin.filter(x => x !== tgl);
-        if (cat === 'sakit') tempSakit = tempSakit.filter(x => x !== tgl);
-        renderModalItems();
+    function hapusTanggal(type, tgl) {
+        if (type === 'alpha') tempAlpha = tempAlpha.filter(x => x !== tgl);
+        if (type === 'izin') tempIzin = tempIzin.filter(x => x !== tgl);
+        if (type === 'sakit') tempSakit = tempSakit.filter(x => x !== tgl);
+        renderChips();
     }
 
-    function tambahTanggal(cat) {
-        const inputId = cat === 'alpha' ? 'input-add-alpha' : (cat === 'izin' ? 'input-add-izin' : 'input-add-sakit');
+    function tambahTanggal(type) {
+        const inputId = type === 'alpha' ? 'input-add-alpha' : (type === 'izin' ? 'input-add-izin' : 'input-add-sakit');
         const el = document.getElementById(inputId);
         if (!el) return;
         const val = parseInt(el.value.trim(), 10);
@@ -1013,15 +601,30 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         tempIzin = tempIzin.filter(x => x !== val);
         tempSakit = tempSakit.filter(x => x !== val);
 
-        if (cat === 'alpha') tempAlpha.push(val);
-        if (cat === 'izin') tempIzin.push(val);
-        if (cat === 'sakit') tempSakit.push(val);
+        if (type === 'alpha') tempAlpha.push(val);
+        if (type === 'izin') tempIzin.push(val);
+        if (type === 'sakit') tempSakit.push(val);
 
         el.value = '';
-        renderModalItems();
+        renderChips();
     }
 
-    function closeEditModal() { document.getElementById('modal-edit-koreksi').style.display = 'none'; }
+    function addTodayDate(type) {
+        let today = new Date().getDate();
+        tempAlpha = tempAlpha.filter(x => x !== today);
+        tempIzin = tempIzin.filter(x => x !== today);
+        tempSakit = tempSakit.filter(x => x !== today);
+
+        if (type === 'alpha') tempAlpha.push(today);
+        if (type === 'izin') tempIzin.push(today);
+        if (type === 'sakit') tempSakit.push(today);
+
+        renderChips();
+    }
+
+    function closeEditModal() {
+        document.getElementById('modal-edit-koreksi').style.display = 'none';
+    }
 
     function saveEditModal() {
         if (activeEditIndex === null || !masterKoreksi[activeEditIndex]) return;
@@ -1032,9 +635,9 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         item._tglAlphaArr = tempAlpha.sort((a,b)=>a-b);
         item._keterangan = document.getElementById('edit-ket').value.trim() || '-';
         item._statusKoreksi = 'Sudah Dikoreksi';
-        item._isEdited = true;
+        item._isDone = true;
 
-        showToast("Memperbarui Spreadsheet...");
+        showToast("Mengirim data ke pusat...");
 
         fetch(APPS_SCRIPT_URL, {
             method: 'POST',
@@ -1045,21 +648,16 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
                     tglSakit: item._tglSakitArr.join(', '),
                     tglIzin: item._tglIzinArr.join(', '),
                     tglAlpha: item._tglAlphaArr.join(', '),
-                    keterangan: item._keterangan
+                    keterangan: item._keterangan,
+                    status: 'Sudah Dikoreksi'
                 }
             })
-        }).then(() => showToast("✅ Spreadsheet Ter-update!"))
+        }).then(() => showToast("Data telah diperbarui"))
           .catch(err => console.error(err));
 
         closeEditModal();
-        renderKoreksi();
-    }
-
-    function filterKoreksiTabel() {
-        let filter = document.getElementById('search-koreksi').value.toUpperCase();
-        document.querySelectorAll('#table-koreksi tbody tr').forEach(row => {
-            row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none";
-        });
+        updateDashboardStats();
+        renderKoreksiList();
     }
     </script>
 </body>
