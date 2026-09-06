@@ -76,7 +76,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .tab-btn { padding: 8px 10px; border: 1px solid var(--border); background: white; border-radius: 10px; font-size: 10px; font-weight: 800; color: var(--text-muted); cursor: pointer; text-align: center; }
 .tab-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); }
 
-/* NEO-CARD SANTRI (SUPER INTERAKTIF & MODERN) */
+/* NEO-CARD SANTRI */
 .santri-list { display: flex; flex-direction: column; gap: 8px; }
 .santri-card { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; transition: transform 0.15s; }
 .santri-card:active { transform: scale(0.99); }
@@ -98,7 +98,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .badge-belum { background: #f1f5f9; color: #94a3b8; border: 1px solid var(--border); }
 
 /* TOMBOL AKSI KARTU */
-.card-actions { display: flex; gap: 6px; pt: 4px; border-top: 1px dashed #f1f5f9; }
+.card-actions { display: flex; gap: 6px; padding-top: 4px; border-top: 1px dashed #f1f5f9; }
 .btn-act { flex: 1; padding: 7px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.15s; }
 .btn-act:active { transform: scale(0.96); }
 
@@ -134,7 +134,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .alpha-btn { padding: 8px 0; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; color: var(--text-main); }
 .alpha-btn.selected { background: var(--primary); color: white; }
 
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 8px 18px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 99999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 8px 18px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 999999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
     </style>
 </head>
@@ -154,7 +154,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
             <div style="text-align:left; margin-bottom:14px;">
                 <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password</label>
-                <input type="password" id="password" placeholder="Masukkan password..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                <input type="password" id="password" placeholder="Masukkan password..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;" oninput="document.getElementById('login-error').style.display='none'; this.style.borderColor='var(--border)';">
+                <div id="login-error" style="color:#e11d48; font-size:11px; font-weight:800; margin-top:6px; display:none; text-align:left;"></div>
             </div>
             
             <button class="btn-act" style="background:var(--primary-gradient); color:white; width:100%; padding:12px; font-size:12px;" onclick="login()">Masuk Sistem ➔</button>
@@ -394,67 +395,66 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         renderKoreksiList();
     }
 
-	function renderKoreksiList() {
-		let container = document.getElementById('santri-list-container');
-		let searchVal = document.getElementById('search-koreksi').value.toUpperCase().trim();
-		container.innerHTML = "";
+    function renderKoreksiList() {
+        let container = document.getElementById('santri-list-container');
+        let searchVal = document.getElementById('search-koreksi').value.toUpperCase().trim();
+        container.innerHTML = "";
 
-		let listToShow = masterKoreksi.filter(item => {
-			let matchFilter = true;
-			if (activeFilter === 'belum') matchFilter = !item._isDone;
-			if (activeFilter === 'sudah') matchFilter = item._isDone;
+        let listToShow = masterKoreksi.filter(item => {
+            let matchFilter = true;
+            if (activeFilter === 'belum') matchFilter = !item._isDone;
+            if (activeFilter === 'sudah') matchFilter = item._isDone;
 
-			let matchSearch = true;
-			if (searchVal) {
-				let haystack = `${item._nama} ${item._idPps} ${item._domisili}`.toUpperCase();
-				matchSearch = haystack.includes(searchVal);
-			}
+            let matchSearch = true;
+            if (searchVal) {
+                let haystack = `${item._nama} ${item._idPps} ${item._domisili}`.toUpperCase();
+                matchSearch = haystack.includes(searchVal);
+            }
 
-			return matchFilter && matchSearch;
-		});
+            return matchFilter && matchSearch;
+        });
 
-		if (listToShow.length === 0) {
-			container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data santri.</div>`;
-			return;
-		}
+        if (listToShow.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data santri.</div>`;
+            return;
+        }
 
-		listToShow.forEach(item => {
-			let st = item._statusKoreksi.toLowerCase();
-			let badgeHtml = `<span class="badge-status badge-belum">Belum</span>`;
-			
-			// Pengecekan presisi: Pastikan tidak mengandung kata "belum"
-			if (st.includes('sesuai') || st.includes('benar')) {
-				badgeHtml = `<span class="badge-status badge-benar">✔ Sesuai</span>`;
-			} else if ((st.includes('sudah') || st.includes('dikoreksi')) && !st.includes('belum')) {
-				badgeHtml = `<span class="badge-status badge-koreksi">✏ Dikoreksi</span>`;
-			}
+        listToShow.forEach(item => {
+            let st = item._statusKoreksi.toLowerCase();
+            let badgeHtml = `<span class="badge-status badge-belum">Belum</span>`;
+            
+            if (st.includes('sesuai') || st.includes('benar')) {
+                badgeHtml = `<span class="badge-status badge-benar">✔ Sesuai</span>`;
+            } else if ((st.includes('sudah') || st.includes('dikoreksi')) && !st.includes('belum')) {
+                badgeHtml = `<span class="badge-status badge-koreksi">✏ Dikoreksi</span>`;
+            }
 
-			let card = document.createElement('div');
-			card.className = 'santri-card fade-in';
+            let card = document.createElement('div');
+            card.className = 'santri-card fade-in';
 
-			card.innerHTML = `
-				<div class="card-top">
-					<div>
-						<div class="santri-nama">${item._nama}</div>
-						<div class="santri-meta">ID: <b>${item._idPps}</b> • ${item._domisili}</div>
-					</div>
-					${badgeHtml}
-				</div>
+            card.innerHTML = `
+                <div class="card-top">
+                    <div>
+                        <div class="santri-nama">${item._nama}</div>
+                        <div class="santri-meta">ID: <b>${item._idPps}</b> • ${item._domisili}</div>
+                    </div>
+                    ${badgeHtml}
+                </div>
 
-				<div class="pills-group">
-					<span class="pill-tag pill-sakit">Sakit: ${item._tglSakitArr.length}</span>
-					<span class="pill-tag pill-izin">Izin: ${item._tglIzinArr.length}</span>
-					<span class="pill-tag pill-alpha">Alpha: ${item._tglAlphaArr.length}</span>
-				</div>
+                <div class="pills-group">
+                    <span class="pill-tag pill-sakit">Sakit: ${item._tglSakitArr.length}</span>
+                    <span class="pill-tag pill-izin">Izin: ${item._tglIzinArr.length}</span>
+                    <span class="pill-tag pill-alpha">Alpha: ${item._tglAlphaArr.length}</span>
+                </div>
 
-				<div class="card-actions">
-					<button class="btn-act btn-verify" onclick="markAsSesuai(${item._id})">✔ Sesuai / Benar</button>
-					<button class="btn-act btn-edit-card" onclick="bukaModalKoreksi(${item._id})">✏ Edit Tanggal</button>
-				</div>
-			`;
-			container.appendChild(card);
-		});
-	}
+                <div class="card-actions">
+                    <button class="btn-act btn-verify" onclick="markAsSesuai(${item._id})">✔ Sesuai / Benar</button>
+                    <button class="btn-act btn-edit-card" onclick="bukaModalKoreksi(${item._id})">✏ Edit Tanggal</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
 
     function markAsSesuai(index) {
         const item = masterKoreksi[index];
@@ -504,8 +504,25 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
     async function login() {
         const passInput = document.getElementById('password').value.trim();
-        if (!currentUser) return showToast("Pilih Abjad Daerah dulu!");
-        if (!passInput) return showToast("Masukkan password!");
+        const errDiv = document.getElementById('login-error');
+        const passEl = document.getElementById('password');
+
+        errDiv.style.display = 'none';
+        passEl.style.borderColor = 'var(--border)';
+
+        if (!currentUser) {
+            errDiv.innerText = "⚠️ Pilih Abjad Daerah terlebih dahulu!";
+            errDiv.style.display = 'block';
+            showToast("Pilih Abjad Daerah dulu!");
+            return;
+        }
+        if (!passInput) {
+            errDiv.innerText = "⚠️ Masukkan password!";
+            errDiv.style.display = 'block';
+            passEl.style.borderColor = '#e11d48';
+            showToast("Masukkan password!");
+            return;
+        }
 
         showToast("Memeriksa kata sandi...");
 
@@ -517,7 +534,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
             let validPassword = foundUser ? foundUser.password : "Taklimda";
 
             if (passInput !== validPassword) {
-                return showToast("❌ Password Salah!");
+                errDiv.innerText = "❌ Kata Sandi Salah!";
+                errDiv.style.display = 'block';
+                passEl.style.borderColor = '#e11d48';
+                showToast("❌ Password Salah!");
+                return;
             }
 
             localStorage.setItem('taklimda_daerah', currentUser);
@@ -529,12 +550,19 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
             fetchKoreksiDataRealtime();
 
         } catch(err) {
+            console.error(err);
             if (passInput === "Taklimda") {
                 localStorage.setItem('taklimda_daerah', currentUser);
+                document.getElementById('nav-avatar').innerText = currentUser;
+                document.getElementById('koreksi-daerah').innerText = currentUser;
+
                 document.getElementById('view-login').classList.remove('active');
                 document.getElementById('view-koreksi').classList.add('active');
                 fetchKoreksiDataRealtime();
             } else {
+                errDiv.innerText = "❌ Kata Sandi Salah!";
+                errDiv.style.display = 'block';
+                passEl.style.borderColor = '#e11d48';
                 showToast("Gagal verifikasi kata sandi!");
             }
         }
