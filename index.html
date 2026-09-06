@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistem Taklimda Mobile</title>
-    <!-- Library SheetJS & QRCode CDN Online -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Library QRCode CDN Online -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
@@ -277,7 +276,6 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         <div class="panel border-left-green fade-in">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                 <h3 class="panel-title" style="border:none; margin:0; color:#555;">Arsip Sesi Cetak</h3>
-                <button class="btn-success bounce-hover" style="padding:7px 14px; font-size:11px;" onclick="exportExcelIzin()">📥 Export Excel</button>
             </div>
             <div class="table-container">
                 <table id="table-riwayat-cetak">
@@ -307,10 +305,6 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         <div class="panel border-left-green fade-in">
             <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;">
                 <input type="text" id="search-koreksi" placeholder="🔍 Cari Nama / ID / Kamar..." oninput="filterKoreksiTabel()">
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-primary bounce-hover" style="flex:1; background:#0284c7; font-size:11px;" onclick="cetakLembarCekKoreksi()">🖨 Lembar Cek Fisik</button>
-                    <button class="btn-success bounce-hover" style="flex:1; font-size:11px;" onclick="exportKoreksi()">📥 Export Excel</button>
-                </div>
             </div>
 
             <div class="table-container">
@@ -357,7 +351,7 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         </button>
     </nav>
 
-    <!-- MODAL POPUP BOUNCE KHUSUS INPUT SURAT IZIN (MODE BERUNTUN/MULTI-INPUT) -->
+    <!-- MODAL POPUP BOUNCE KHUSUS INPUT SURAT IZIN -->
     <div id="modal-input-izin" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.65); backdrop-filter:blur(6px); z-index: 99999; align-items: center; justify-content: center; padding: 15px;">
         <div class="bounce-in" style="background: white; width: 100%; max-width: 440px; border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow:0 25px 50px rgba(0,0,0,0.3);">
             <div style="background: linear-gradient(135deg, #0a7a5c, #0c9c74); padding: 14px 18px; color: white; display: flex; justify-content: space-between; align-items: center;">
@@ -538,7 +532,7 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
     }
 
     // ============================================================================
-    // MODAL INPUT POPUP CONTROL (BERUNTUN/MULTI-INPUT)
+    // MODAL INPUT POPUP CONTROL
     // ============================================================================
     function openInputModal() {
         document.getElementById('modal-input-izin').style.display = 'flex';
@@ -617,7 +611,6 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
             body: JSON.stringify({ action: 'saveIzin', data: record })
         }).catch(err => console.error(err));
 
-        // MODAL TETAP TERBUKA & SIAP INPUT ULANG (MULTI-INPUT)
         idInput.value = '';
         idInput.focus();
         document.getElementById('modal-santri-preview').classList.add('hidden');
@@ -1067,43 +1060,6 @@ td { padding: 11px 14px; border-bottom: 1px solid var(--border); }
         document.querySelectorAll('#table-koreksi tbody tr').forEach(row => {
             row.style.display = row.innerText.toUpperCase().includes(filter) ? "" : "none";
         });
-    }
-
-    function exportKoreksi() {
-        if(masterKoreksi.length === 0) return showToast("Tidak ada data!");
-        let dataToExport = masterKoreksi.map((item, idx) => ({
-            "No": idx + 1,
-            "Status": item._isEdited ? "Sudah Dikoreksi" : "Belum Dikoreksi",
-            "ID PPS": item._idPps,
-            "Nama": item._nama,
-            "Domisili": item._domisili,
-            "Jalsah": item._jalsah,
-            "S": item._tglSakitArr.length,
-            "I": item._tglIzinArr.length,
-            "A": item._tglAlphaArr.length,
-            "Keterangan": item._keterangan
-        }));
-        const ws = XLSX.utils.json_to_sheet(dataToExport);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Koreksi");
-        XLSX.writeFile(wb, `Koreksi_Daerah_${currentUser}.xlsx`);
-    }
-
-    function exportExcelIzin() {
-        let allData = [...dbIzin];
-        riwayatCetak.forEach(b => allData.push(...b.items));
-        if(allData.length === 0) return showToast("Kosong!");
-        let exportClean = allData.map(item => ({
-            "ID PPS": item['ID PPS'],
-            "NAMA": item.NAMA,
-            "Domisili": item.DOMISILI,
-            "Tanggal Hijriyah": item['Tgl Hijriyah'],
-            "Keterangan": item['Keterangan Sakit']
-        }));
-        const ws = XLSX.utils.json_to_sheet(exportClean);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Rekap Surat Izin");
-        XLSX.writeFile(wb, `Rekap_Izin_${currentUser}.xlsx`);
     }
     </script>
 </body>
