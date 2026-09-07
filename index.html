@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -69,6 +69,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .progress-bar-bg { flex: 1; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
 .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
+/* NETWORK & SYNC BADGE */
+.sync-badge { font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
+.sync-badge.pending { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
+.sync-badge.online { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+.sync-badge.offline { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; }
+
 /* CONTROLS ROW */
 .controls-row { display: flex; gap: 6px; margin-bottom: 10px; }
 .search-box-mini { flex: 1; position: relative; }
@@ -81,7 +87,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
 /* NEO-CARD SANTRI */
 .santri-list { display: flex; flex-direction: column; gap: 8px; }
-.santri-card { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; transition: transform 0.15s; }
+.santri-card { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; transition: transform 0.15s; position: relative; }
 .santri-card:active { transform: scale(0.99); }
 
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -99,6 +105,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .badge-benar { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
 .badge-koreksi { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 .badge-belum { background: #f1f5f9; color: #94a3b8; border: 1px solid var(--border); }
+.badge-unsynced { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 8px; padding: 2px 6px; border-radius: 6px; }
 
 /* TOMBOL AKSI KARTU */
 .card-actions { display: flex; gap: 6px; padding-top: 4px; border-top: 1px dashed #f1f5f9; }
@@ -109,8 +116,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .btn-edit-card { background: #f8fafc; color: var(--text-main); border: 1px solid var(--border); }
 
 /* MODAL & CHIPS */
-#modal-edit-koreksi { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
+.modal-overlay.center-modal { align-items: center; padding: 16px; }
+
 .modal-content { background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+.modal-overlay.center-modal .modal-content { border-radius: 20px; max-height: 90vh; }
 
 .modal-header { padding: 12px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
 .modal-body { padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
@@ -127,7 +137,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
 .quick-input-group { display: flex; gap: 6px; }
 .quick-input-group input { width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; outline: none; }
-.btn-add-chip { padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; }
+.btn-add-chip { padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; }
 
 /* LOGIN SCREEN */
 #view-login { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; justify-content: center; align-items: center; padding: 16px; z-index: 99999; }
@@ -137,7 +147,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .alpha-btn { padding: 8px 0; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; color: var(--text-main); }
 .alpha-btn.selected { background: var(--primary); color: white; }
 
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 8px 18px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 999999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 8px 18px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 999999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: center; max-width: 90%; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
     </style>
 </head>
@@ -173,12 +183,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div style="display:flex; gap:10px; align-items:center;">
                     <div class="avatar" id="nav-avatar">A</div>
                     <div>
-                        <h3 style="font-size:13px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <h3 style="font-size:13px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
+                            <span id="net-status-badge" class="sync-badge online">● Online</span>
+                        </div>
                         <p style="font-size:10px; color:var(--text-muted); font-weight:600;" id="stat-progress-text">0 / 0 Santri Selesai</p>
                     </div>
                 </div>
                 <div style="display:flex; gap:4px;">
-                    <button class="btn-act" style="background:#f1f5f9; color:var(--text-main);" onclick="fetchKoreksiDataRealtime()">🔄 Sync</button>
+                    <button class="btn-act" style="background:#f1f5f9; color:var(--text-main);" onclick="manualSync()">🔄 Sync</button>
+                    <button class="btn-act" style="background:#e0f2fe; color:#0369a1;" onclick="bukaModalGantiPass()">🔑 Pass</button>
                     <button class="btn-act" style="background:#ffe4e6; color:var(--alpha-color);" onclick="logout()">Keluar</button>
                 </div>
             </div>
@@ -188,6 +202,9 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                     <div class="progress-bar-fill" id="progress-bar-fill"></div>
                 </div>
                 <span style="font-size:11px; font-weight:800; color:var(--primary);" id="stat-percent">0%</span>
+            </div>
+            <div id="pending-info-bar" style="display:none; font-size:10px; font-weight:800; color:#d97706; background:#fef3c7; border:1px solid #fcd34d; padding:4px 8px; border-radius:8px; margin-top:8px; text-align:center;">
+                ⚠️ Ada <span id="pending-count-num">0</span> data tersimpan offline. Akan otomatis dikirim saat online.
             </div>
         </div>
 
@@ -206,12 +223,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
         <!-- LIST SANTRI CARDS -->
         <div class="santri-list slide-up" id="santri-list-container">
-            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Memuat data dari pusat...</div>
+            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Memuat data...</div>
         </div>
     </div>
 
     <!-- MODAL EDIT KOREKSI ABSEN -->
-    <div id="modal-edit-koreksi">
+    <div id="modal-edit-koreksi" class="modal-overlay">
         <div class="modal-content slide-up">
             <div class="modal-header">
                 <div>
@@ -230,7 +247,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div class="section-box">
                     <div class="section-title" style="color:var(--alpha-color);">
                         <span>Tanggal Alpha (A)</span>
-                        <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); padding:2px 6px; border-radius:4px; font-weight:800;">+ Hari Ini</button>
+                        <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); border:none; padding:2px 6px; border-radius:4px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
                     <div class="chips-wrapper" id="chips-alpha"></div>
                     <div class="quick-input-group">
@@ -243,7 +260,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div class="section-box">
                     <div class="section-title" style="color:var(--izin-color);">
                         <span>Tanggal Izin (I)</span>
-                        <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); padding:2px 6px; border-radius:4px; font-weight:800;">+ Hari Ini</button>
+                        <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); border:none; padding:2px 6px; border-radius:4px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
                     <div class="chips-wrapper" id="chips-izin"></div>
                     <div class="quick-input-group">
@@ -256,7 +273,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div class="section-box">
                     <div class="section-title" style="color:var(--sakit-color);">
                         <span>Tanggal Sakit (S)</span>
-                        <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); padding:2px 6px; border-radius:4px; font-weight:800;">+ Hari Ini</button>
+                        <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); border:none; padding:2px 6px; border-radius:4px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
                     <div class="chips-wrapper" id="chips-sakit"></div>
                     <div class="quick-input-group">
@@ -271,8 +288,40 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 </div>
 
                 <div style="display:flex; gap:6px; margin-top:4px;">
-                    <button onclick="closeEditModal()" style="flex:1; padding:10px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:10px; font-size:12px;">Batal</button>
-                    <button onclick="saveEditModal()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:10px; font-size:12px;">Simpan & Sync ➔</button>
+                    <button onclick="closeEditModal()" style="flex:1; padding:10px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:10px; font-size:12px; border:none;">Batal</button>
+                    <button onclick="saveEditModal()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:10px; font-size:12px;">Simpan Data ➔</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GANTI PASSWORD -->
+    <div id="modal-ganti-pass" class="modal-overlay center-modal">
+        <div class="modal-content slide-up" style="max-height:none;">
+            <div class="modal-header">
+                <div>
+                    <div style="font-size:9px; opacity:0.8; font-weight:800; text-transform:uppercase;">Pengaturan Akun</div>
+                    <div style="font-size:14px; font-weight:800;">Ganti Password Daerah <span id="pass-daerah-label">A</span></div>
+                </div>
+                <button onclick="closeGantiPassModal()" style="background:rgba(255,255,255,0.2); color:white; border:none; width:26px; height:26px; border-radius:50%; font-size:12px; font-weight:bold;">✕</button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password Lama</label>
+                    <input type="password" id="pass-lama" placeholder="Password lama..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                </div>
+                <div>
+                    <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password Baru</label>
+                    <input type="password" id="pass-baru" placeholder="Masukkan password baru..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                </div>
+                <div>
+                    <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Konfirmasi Password Baru</label>
+                    <input type="password" id="pass-konfirm" placeholder="Ulangi password baru..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                </div>
+                <div id="ganti-pass-error" style="color:#e11d48; font-size:11px; font-weight:800; display:none; text-align:left;"></div>
+                <div style="display:flex; gap:6px; margin-top:8px;">
+                    <button onclick="closeGantiPassModal()" style="flex:1; padding:10px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:10px; font-size:12px; border:none;">Batal</button>
+                    <button onclick="submitGantiPassword()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:10px; font-size:12px;">Simpan Sandi Baru ➔</button>
                 </div>
             </div>
         </div>
@@ -286,11 +335,45 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
     let activeEditIndex = null;
     let activeFilter = 'all';
     let tempSakit = [], tempIzin = [], tempAlpha = [];
+    let isSyncing = false;
 
     document.addEventListener("DOMContentLoaded", () => {
         generateAlphabetGrid();
         checkSavedLogin();
+        setupNetworkListeners();
+        
+        // Auto-sync antrean offline secara berkala setiap 15 detik jika online
+        setInterval(() => {
+            if (navigator.onLine) {
+                processPendingQueue();
+            }
+        }, 15000);
     });
+
+    function setupNetworkListeners() {
+        window.addEventListener('online', () => {
+            updateNetworkBadge(true);
+            showToast("🌐 Jaringan kembali online. Memulai auto-sync...");
+            processPendingQueue();
+        });
+        window.addEventListener('offline', () => {
+            updateNetworkBadge(false);
+            showToast("⚠️ Jaringan terputus! Mode Offline Aktif.");
+        });
+        updateNetworkBadge(navigator.onLine);
+    }
+
+    function updateNetworkBadge(isOnline) {
+        const badge = document.getElementById('net-status-badge');
+        if (!badge) return;
+        if (isOnline) {
+            badge.className = "sync-badge online";
+            badge.innerHTML = "● Online";
+        } else {
+            badge.className = "sync-badge offline";
+            badge.innerHTML = "● Offline";
+        }
+    }
 
     function checkSavedLogin() {
         let savedDaerah = localStorage.getItem('taklimda_daerah');
@@ -301,6 +384,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
             
             document.getElementById('view-login').classList.remove('active');
             document.getElementById('view-koreksi').classList.add('active');
+            
+            loadLocalCacheFirst();
             fetchKoreksiDataRealtime();
         }
     }
@@ -310,11 +395,121 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         if (!t) return;
         t.innerText = msg;
         t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 2200);
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    /* MANAGEMENT CACHE & OFFLINE QUEUE */
+    function getPendingQueue() {
+        try {
+            return JSON.parse(localStorage.getItem('taklimda_pending_queue') || '[]');
+        } catch(e) { return []; }
+    }
+
+    function savePendingQueue(queue) {
+        localStorage.setItem('taklimda_pending_queue', JSON.stringify(queue));
+        updatePendingUI();
+    }
+
+    function queueForSync(dataPayload) {
+        let queue = getPendingQueue();
+        queue = queue.filter(q => q._rowIndex !== dataPayload._rowIndex);
+        queue.push(dataPayload);
+        savePendingQueue(queue);
+    }
+
+    function updatePendingUI() {
+        let queue = getPendingQueue();
+        let bar = document.getElementById('pending-info-bar');
+        let num = document.getElementById('pending-count-num');
+        if (bar && num) {
+            if (queue.length > 0) {
+                num.innerText = queue.length;
+                bar.style.display = 'block';
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+    }
+
+    function saveLocalCache() {
+        if (currentUser && masterKoreksi.length > 0) {
+            localStorage.setItem(`taklimda_cache_${currentUser}`, JSON.stringify(masterKoreksi));
+        }
+    }
+
+    function loadLocalCacheFirst() {
+        if (!currentUser) return;
+        let cached = localStorage.getItem(`taklimda_cache_${currentUser}`);
+        if (cached) {
+            try {
+                masterKoreksi = JSON.parse(cached);
+                updateDashboardStats();
+                renderKoreksiList();
+                updatePendingUI();
+            } catch(e) { console.error("Error reading cache", e); }
+        }
+    }
+
+    /* SYNC PROSES KETIKA ONLINE */
+    async function processPendingQueue() {
+        if (isSyncing || !navigator.onLine) return;
+        let queue = getPendingQueue();
+        if (queue.length === 0) return;
+
+        isSyncing = true;
+        let remaining = [...queue];
+        let successCount = 0;
+
+        for (let item of queue) {
+            try {
+                let res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'updateKoreksi',
+                        data: item
+                    })
+                });
+                if (res.ok) {
+                    remaining = remaining.filter(q => q._rowIndex !== item._rowIndex);
+                    
+                    // Hilangkan penanda unsynced di memori
+                    let mItem = masterKoreksi.find(x => x._rowIndex === item._rowIndex);
+                    if (mItem) mItem._unsynced = false;
+                    
+                    successCount++;
+                }
+            } catch(e) {
+                console.error("Gagal sync item:", item, e);
+                break; // Hentikan iterasi jika jaringan error
+            }
+        }
+
+        savePendingQueue(remaining);
+        saveLocalCache();
+        isSyncing = false;
+
+        if (successCount > 0) {
+            showToast(`✅ ${successCount} Data offline berhasil tersinkronisasi ke pusat!`);
+            renderKoreksiList();
+        }
+    }
+
+    async function manualSync() {
+        if (!navigator.onLine) {
+            showToast("⚠️ Tidak ada jaringan internet!");
+            return;
+        }
+        showToast("Memulai sinkronisasi...");
+        await processPendingQueue();
+        await fetchKoreksiDataRealtime();
     }
 
     async function fetchKoreksiDataRealtime() {
-        showToast("Memuat data...");
+        if (!navigator.onLine) {
+            showToast("Offline: Menampilkan data tersimpan di HP");
+            return;
+        }
+
         let container = document.getElementById('santri-list-container');
 
         try {
@@ -322,7 +517,9 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
             let rawData = await res.json();
 
             if (!Array.isArray(rawData) || rawData.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Data masih kosong.</div>`;
+                if (masterKoreksi.length === 0) {
+                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Data masih kosong.</div>`;
+                }
                 return;
             }
 
@@ -342,11 +539,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 return dom.startsWith(curr + '-') || dom.startsWith(curr + ' ') || dom.startsWith(curr) || dom.includes(curr);
             });
 
+            let pendingQueue = getPendingQueue();
+
             masterKoreksi = filtered.map((r, i) => {
-                let tAlpha = parseDates(window.getValPeka(r, ['tgl_alpha', 'tglalpha', 'tanggal_alpha', 'alpha']));
-                let tIzin  = parseDates(window.getValPeka(r, ['tgl_izin', 'tglizin', 'tanggal_izin', 'izin']));
-                let tSakit = parseDates(window.getValPeka(r, ['tgl_sakit', 'tglsakit', 'tanggal_sakit', 'sakit']));
-                let statusK = window.getValPeka(r, ['status_koreksi', 'status', 'koreksi']) || 'Belum Dikoreksi';
+                let pendingItem = pendingQueue.find(p => p._rowIndex === r._rowIndex);
+
+                let tAlpha = pendingItem ? parseDates(pendingItem.tglAlpha) : parseDates(window.getValPeka(r, ['tgl_alpha', 'tglalpha', 'tanggal_alpha', 'alpha']));
+                let tIzin  = pendingItem ? parseDates(pendingItem.tglIzin)  : parseDates(window.getValPeka(r, ['tgl_izin', 'tglizin', 'tanggal_izin', 'izin']));
+                let tSakit = pendingItem ? parseDates(pendingItem.tglSakit) : parseDates(window.getValPeka(r, ['tgl_sakit', 'tglsakit', 'tanggal_sakit', 'sakit']));
+                let statusK = pendingItem ? pendingItem.status : (window.getValPeka(r, ['status_koreksi', 'status', 'koreksi']) || 'Belum Dikoreksi');
+                let ket = pendingItem ? pendingItem.keterangan : (window.getValPeka(r, ['keterangan_taklimda', 'keterangan', 'ket']) || '-');
 
                 let isVerified = (statusK.toLowerCase().includes('sesuai') || statusK.toLowerCase().includes('benar') || statusK.toLowerCase().includes('sudah')) && !statusK.toLowerCase().includes('belum');
 
@@ -361,18 +563,21 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                     _tglAlphaArr: tAlpha,
                     _tglIzinArr: tIzin,
                     _tglSakitArr: tSakit,
-                    _keterangan: window.getValPeka(r, ['keterangan_taklimda', 'keterangan', 'ket']) || '-',
+                    _keterangan: ket,
                     _statusKoreksi: statusK,
-                    _isDone: isVerified
+                    _isDone: isVerified,
+                    _unsynced: !!pendingItem
                 };
             });
 
+            saveLocalCache();
             updateDashboardStats();
             renderKoreksiList();
+            updatePendingUI();
             showToast(`Terhubung: ${masterKoreksi.length} Santri`);
         } catch(e) {
             console.error(e);
-            showToast("Gagal mengambil data dari pusat!");
+            showToast("Menggunakan data lokal HP (Koneksi terganggu)");
         }
     }
 
@@ -432,6 +637,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 badgeHtml = `<span class="badge-status badge-koreksi">✏ Dikoreksi</span>`;
             }
 
+            let unsyncedBadge = item._unsynced ? `<span class="badge-unsynced">⏳ Belum Sync</span>` : '';
+
             let card = document.createElement('div');
             card.className = 'santri-card fade-in';
 
@@ -441,7 +648,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                         <div class="santri-nama">${item._nama}</div>
                         <div class="santri-meta">ID: <b>${item._idPps}</b> • ${item._domisili}</div>
                     </div>
-                    ${badgeHtml}
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                        ${badgeHtml}
+                        ${unsyncedBadge}
+                    </div>
                 </div>
 
                 <div class="pills-group">
@@ -459,33 +669,61 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         });
     }
 
+    /* PENGIRIMAN DATA / OFFLINE HANDLING */
     function markAsSesuai(index) {
         const item = masterKoreksi[index];
         if (!item) return;
 
         item._statusKoreksi = 'Sesuai (Benar)';
         item._isDone = true;
+        item._unsynced = true;
 
-        showToast("Mengirim data ke pusat...");
-
-        fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'updateKoreksi',
-                data: {
-                    _rowIndex: item._rowIndex,
-                    tglSakit: item._tglSakitArr.join(', '),
-                    tglIzin: item._tglIzinArr.join(', '),
-                    tglAlpha: item._tglAlphaArr.join(', '),
-                    keterangan: item._keterangan !== '-' ? item._keterangan : '',
-                    status: 'Sesuai (Benar)'
-                }
-            })
-        }).then(() => showToast("Data telah diperbarui"))
-          .catch(err => console.error(err));
-
+        saveLocalCache();
         updateDashboardStats();
         renderKoreksiList();
+
+        let dataPayload = {
+            _rowIndex: item._rowIndex,
+            tglSakit: item._tglSakitArr.join(', '),
+            tglIzin: item._tglIzinArr.join(', '),
+            tglAlpha: item._tglAlphaArr.join(', '),
+            keterangan: item._keterangan !== '-' ? item._keterangan : '',
+            status: 'Sesuai (Benar)'
+        };
+
+        sendOrQueueData(dataPayload);
+    }
+
+    async function sendOrQueueData(dataPayload) {
+        if (!navigator.onLine) {
+            queueForSync(dataPayload);
+            showToast("💾 Tersimpan di HP. Akan dikirim otomatis saat online.");
+            return;
+        }
+
+        showToast("Mengirim data ke pusat...");
+        try {
+            let res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'updateKoreksi',
+                    data: dataPayload
+                })
+            });
+            if (res.ok) {
+                showToast("✔ Data berhasil dikirim ke pusat");
+                let mItem = masterKoreksi.find(x => x._rowIndex === dataPayload._rowIndex);
+                if (mItem) mItem._unsynced = false;
+                saveLocalCache();
+                renderKoreksiList();
+            } else {
+                throw new Error("Respon server gagal");
+            }
+        } catch(err) {
+            console.warn("Gagal terkirim langsung, masuk antrean offline:", err);
+            queueForSync(dataPayload);
+            showToast("💾 Koneksi terputus! Data disimpan lokal.");
+        }
     }
 
     function generateAlphabetGrid() {
@@ -534,9 +772,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
             let users = await res.json();
 
             let foundUser = users.find(u => u.daerah === currentUser);
-            let validPassword = foundUser ? foundUser.password : "Taklimda";
-
-            if (passInput !== validPassword) {
+            
+            if (!foundUser || passInput !== foundUser.password) {
                 errDiv.innerText = "❌ Kata Sandi Salah!";
                 errDiv.style.display = 'block';
                 passEl.style.borderColor = '#e11d48';
@@ -550,24 +787,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
             
             document.getElementById('view-login').classList.remove('active');
             document.getElementById('view-koreksi').classList.add('active');
+            
+            loadLocalCacheFirst();
             fetchKoreksiDataRealtime();
 
         } catch(err) {
             console.error(err);
-            if (passInput === "Taklimda") {
-                localStorage.setItem('taklimda_daerah', currentUser);
-                document.getElementById('nav-avatar').innerText = currentUser;
-                document.getElementById('koreksi-daerah').innerText = currentUser;
-
-                document.getElementById('view-login').classList.remove('active');
-                document.getElementById('view-koreksi').classList.add('active');
-                fetchKoreksiDataRealtime();
-            } else {
-                errDiv.innerText = "❌ Kata Sandi Salah!";
-                errDiv.style.display = 'block';
-                passEl.style.borderColor = '#e11d48';
-                showToast("Gagal verifikasi kata sandi!");
-            }
+            errDiv.innerText = "❌ Gagal terhubung ke jaringan/server!";
+            errDiv.style.display = 'block';
+            passEl.style.borderColor = '#e11d48';
+            showToast("Gagal verifikasi! Periksa Koneksi Internet.");
         }
     }
 
@@ -578,6 +807,75 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         document.getElementById('view-login').classList.add('active');
     }
 
+    /* FITUR GANTI PASSWORD */
+    function bukaModalGantiPass() {
+        document.getElementById('pass-daerah-label').innerText = currentUser;
+        document.getElementById('pass-lama').value = '';
+        document.getElementById('pass-baru').value = '';
+        document.getElementById('pass-konfirm').value = '';
+        document.getElementById('ganti-pass-error').style.display = 'none';
+        document.getElementById('modal-ganti-pass').style.display = 'flex';
+    }
+
+    function closeGantiPassModal() {
+        document.getElementById('modal-ganti-pass').style.display = 'none';
+    }
+
+    async function submitGantiPassword() {
+        const passLama = document.getElementById('pass-lama').value.trim();
+        const passBaru = document.getElementById('pass-baru').value.trim();
+        const passKonfirm = document.getElementById('pass-konfirm').value.trim();
+        const errDiv = document.getElementById('ganti-pass-error');
+
+        errDiv.style.display = 'none';
+
+        if (!passLama || !passBaru || !passKonfirm) {
+            errDiv.innerText = "⚠️ Semua kolom wajib diisi!";
+            errDiv.style.display = 'block';
+            return;
+        }
+
+        if (passBaru !== passKonfirm) {
+            errDiv.innerText = "⚠️ Konfirmasi password baru tidak cocok!";
+            errDiv.style.display = 'block';
+            return;
+        }
+
+        if (!navigator.onLine) {
+            errDiv.innerText = "⚠️ Harus terhubung internet untuk ganti password!";
+            errDiv.style.display = 'block';
+            return;
+        }
+
+        showToast("Memproses ganti password...");
+
+        try {
+            let res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'changePassword',
+                    daerah: currentUser,
+                    oldPassword: passLama,
+                    newPassword: passBaru
+                })
+            });
+
+            let jsonRes = await res.json();
+            if (jsonRes.status === 'success') {
+                showToast("✅ Password berhasil diperbarui!");
+                closeGantiPassModal();
+            } else {
+                errDiv.innerText = "❌ " + (jsonRes.message || "Gagal memperbarui password. Periksa password lama!");
+                errDiv.style.display = 'block';
+            }
+        } catch(e) {
+            console.error(e);
+            errDiv.innerText = "❌ Terjadi kesalahan jaringan!";
+            errDiv.style.display = 'block';
+        }
+    }
+
+    /* EDIT MODAL TANGGAL SANTRI */
     function bukaModalKoreksi(index) {
         activeEditIndex = index;
         const item = masterKoreksi[index];
@@ -667,28 +965,23 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         item._keterangan = document.getElementById('edit-ket').value.trim() || '-';
         item._statusKoreksi = 'Sudah Dikoreksi';
         item._isDone = true;
+        item._unsynced = true;
 
-        showToast("Mengirim data ke pusat...");
-
-        fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({
-                action: 'updateKoreksi',
-                data: {
-                    _rowIndex: item._rowIndex,
-                    tglSakit: item._tglSakitArr.join(', '),
-                    tglIzin: item._tglIzinArr.join(', '),
-                    tglAlpha: item._tglAlphaArr.join(', '),
-                    keterangan: item._keterangan,
-                    status: 'Sudah Dikoreksi'
-                }
-            })
-        }).then(() => showToast("Data telah diperbarui"))
-          .catch(err => console.error(err));
-
+        saveLocalCache();
         closeEditModal();
         updateDashboardStats();
         renderKoreksiList();
+
+        let dataPayload = {
+            _rowIndex: item._rowIndex,
+            tglSakit: item._tglSakitArr.join(', '),
+            tglIzin: item._tglIzinArr.join(', '),
+            tglAlpha: item._tglAlphaArr.join(', '),
+            keterangan: item._keterangan,
+            status: 'Sudah Dikoreksi'
+        };
+
+        sendOrQueueData(dataPayload);
     }
     </script>
 </body>
