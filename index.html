@@ -53,14 +53,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .view { display: none; }
 .view.active { display: block !important; }
 
-/* ANIMASI UI */
 @keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .slide-up { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 .fade-in { animation: fadeIn 0.2s ease-in; }
 
-/* TOP DECK HEADER & PROGRESS */
 .top-deck { background: white; border-radius: 20px; padding: 14px 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 12px; }
 .header-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .avatar { background: var(--primary-gradient); color: white; width: 40px; height: 40px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 17px; font-weight: 800; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
@@ -69,13 +67,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .progress-bar-bg { flex: 1; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
 .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
-/* NETWORK & SYNC BADGE */
 .sync-badge { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
 .sync-badge.pending { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
 .sync-badge.online { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
 .sync-badge.offline { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; }
 
-/* CONTROLS ROW */
+.mode-banner { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; margin-top: 10px; text-align: center; }
+.mode-banner.alpha { background: var(--alpha-bg); color: var(--alpha-color); border-color: #fecdd3; }
+.mode-banner.sakit { background: var(--sakit-bg); color: var(--sakit-color); border-color: #bae6fd; }
+.mode-banner.izin { background: var(--izin-bg); color: var(--izin-color); border-color: #fef3c7; }
+
 .controls-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .search-box-mini { width: 100%; position: relative; }
 .search-box-mini input { width: 100%; padding: 10px 14px 10px 36px; border: 1px solid var(--border); border-radius: 14px; outline: none; background: white; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: border-color 0.2s; }
@@ -86,7 +87,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .tab-btn { flex: 1; padding: 10px 12px; border: 1px solid var(--border); background: white; border-radius: 12px; font-size: 11px; font-weight: 800; color: var(--text-muted); cursor: pointer; text-align: center; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 .tab-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); box-shadow: 0 4px 12px rgba(15,23,42,0.15); }
 
-/* GRID KAMAR (KOTAK-KOTAK) */
 .room-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .room-card { background: white; border-radius: 18px; border: 1px solid var(--border); padding: 14px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; }
 .room-card:active { transform: scale(0.97); }
@@ -95,12 +95,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .room-card-count { background: var(--primary-gradient); color: white; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 10px; }
 .room-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; font-size: 10px; color: var(--text-muted); font-weight: 700; }
 
-/* DETAIL KAMAR (LIST SANTRI) */
 .room-detail-header { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
 .btn-back { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.15s; }
 .btn-back:active { transform: scale(0.95); }
 
-/* CARD SANTRI */
 .santri-list { display: flex; flex-direction: column; gap: 10px; }
 .santri-card { background: white; border-radius: 16px; padding: 14px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.015); display: flex; flex-direction: column; gap: 10px; transition: transform 0.15s; }
 .santri-card:active { transform: scale(0.99); }
@@ -115,14 +113,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .pill-izin { background: var(--izin-bg); color: var(--izin-color); }
 .pill-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
 
-/* BADGES STATUS VERIFIKASI */
 .badge-status { padding: 4px 8px; border-radius: 8px; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; }
 .badge-benar { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
 .badge-koreksi { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 .badge-belum { background: #f1f5f9; color: #94a3b8; border: 1px solid var(--border); }
 .badge-unsynced { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 8px; padding: 2px 6px; border-radius: 6px; }
 
-/* TOMBOL AKSI KARTU */
 .card-actions { display: flex; gap: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; }
 .btn-act { flex: 1; padding: 8px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.15s; }
 .btn-act:active { transform: scale(0.96); }
@@ -130,7 +126,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .btn-verify { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
 .btn-edit-card { background: #f8fafc; color: var(--text-main); border: 1px solid var(--border); }
 
-/* MODAL & CHIPS */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
 .modal-overlay.center-modal { align-items: center; padding: 16px; }
 
@@ -154,7 +149,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .quick-input-group input { width: 70px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; outline: none; }
 .btn-add-chip { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; }
 
-/* LOGIN SCREEN */
 #view-login { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; justify-content: center; align-items: center; padding: 16px; z-index: 99999; }
 #view-login.active { display: flex !important; }
 .login-card { background: white; padding: 24px 18px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); width: 100%; border: 1px solid var(--border); text-align: center; }
@@ -190,9 +184,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         </div>
     </div>
 
-    <!-- VIEW UTAMA: KOREKSI ABSEN -->
+    <!-- VIEW UTAMA -->
     <div id="view-koreksi" class="view">
-        <!-- COMPACT TOP DECK -->
         <div class="top-deck slide-up">
             <div class="header-compact">
                 <div style="display:flex; gap:10px; align-items:center;">
@@ -218,12 +211,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 </div>
                 <span style="font-size:11px; font-weight:800; color:var(--primary);" id="stat-percent">0%</span>
             </div>
+
+            <div id="mode-banner-el" class="mode-banner" style="display:none;">
+                📢 Mode Fokus Koreksi: SEMUA DATA
+            </div>
+
             <div id="pending-info-bar" style="display:none; font-size:10px; font-weight:800; color:#d97706; background:#fef3c7; border:1px solid #fcd34d; padding:6px 10px; border-radius:10px; margin-top:8px; text-align:center;">
                 ⚠️ Ada <span id="pending-count-num">0</span> data tersimpan offline. Akan otomatis dikirim saat online.
             </div>
         </div>
 
-        <!-- SEARCH & FILTER ROW -->
         <div class="controls-row slide-up">
             <div class="search-box-mini">
                 <span class="search-icon">🔍</span>
@@ -235,7 +232,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             </div>
         </div>
 
-        <!-- LIST CONTAINER (GRID KAMAR ATAU DAFTAR SANTRI KAMAR) -->
         <div id="santri-list-container" class="slide-up">
             <div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Memuat data...</div>
         </div>
@@ -346,9 +342,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     let currentUser = ""; 
     let masterKoreksi = [];
-    let activeEditIndex = null;
+    let currentFilterMode = "all"; 
+    let activeEditRowIndex = null; // DIREVISI: MENGGUNAKAN ROW INDEX UNIK
     let activeFilter = 'belum'; 
-    let selectedRoom = null; // Menyimpan kamar yang sedang dibuka
+    let selectedRoom = null; 
     let tempSakit = [], tempIzin = [], tempAlpha = [];
     let isSyncing = false;
 
@@ -412,7 +409,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    /* MANAGEMENT CACHE & OFFLINE QUEUE */
     function getPendingQueue() {
         try {
             return JSON.parse(localStorage.getItem('taklimda_pending_queue') || '[]');
@@ -464,7 +460,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
     }
 
-    /* SYNC PROSES KETIKA ONLINE */
     async function processPendingQueue() {
         if (isSyncing || !navigator.onLine) return;
         let queue = getPendingQueue();
@@ -526,6 +521,23 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         let container = document.getElementById('santri-list-container');
 
         try {
+            let resC = await fetch(APPS_SCRIPT_URL + "?action=getConfig");
+            let jsonC = await resC.json();
+            if (jsonC && jsonC.filterAbsen) {
+                currentFilterMode = jsonC.filterAbsen.toLowerCase();
+            }
+
+            let bannerEl = document.getElementById('mode-banner-el');
+            if (bannerEl) {
+                if (currentFilterMode && currentFilterMode !== 'all') {
+                    bannerEl.className = `mode-banner ${currentFilterMode}`;
+                    bannerEl.innerText = `📢 Mode Koreksi Aktif: FOKUS DATA ${currentFilterMode.toUpperCase()}`;
+                    bannerEl.style.display = 'block';
+                } else {
+                    bannerEl.style.display = 'none';
+                }
+            }
+
             let res = await fetch(APPS_SCRIPT_URL);
             let rawData = await res.json();
 
@@ -549,17 +561,18 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 let dom = String(window.getValPeka(r, ['domisili', 'daerah', 'kamar', 'wilayah']) || '').toUpperCase().trim();
                 let curr = String(currentUser || '').toUpperCase().trim();
                 if (!curr) return true;
-                return dom.startsWith(curr + '-') || dom.startsWith(curr + ' ') || dom.startsWith(curr) || dom.includes(curr);
+                return dom === curr || (dom.startsWith(curr) && !/^[A-Z]$/.test(dom.charAt(curr.length)));
             });
 
             let pendingQueue = getPendingQueue();
 
-            masterKoreksi = filtered.map((r, i) => {
-                let pendingItem = pendingQueue.find(p => p._rowIndex === r._rowIndex);
+            let mappedList = filtered.map((r, i) => {
+                let actualRowIndex = (r._rowIndex !== undefined && r._rowIndex !== null && r._rowIndex !== '') ? r._rowIndex : (r.row_index || r.rowIndex || (i + 2));
+                let pendingItem = pendingQueue.find(p => p._rowIndex === actualRowIndex);
 
-                let tAlpha = pendingItem ? parseDates(pendingItem.tglAlpha) : parseDates(window.getValPeka(r, ['tgl_alpha', 'tglalpha', 'tanggal_alpha', 'alpha']));
-                let tIzin  = pendingItem ? parseDates(pendingItem.tglIzin)  : parseDates(window.getValPeka(r, ['tgl_izin', 'tglizin', 'tanggal_izin', 'izin']));
-                let tSakit = pendingItem ? parseDates(pendingItem.tglSakit) : parseDates(window.getValPeka(r, ['tgl_sakit', 'tglsakit', 'tanggal_sakit', 'sakit']));
+                let tAlpha = pendingItem ? parseDates(pendingItem.tglAlpha) : parseDates(window.getValPeka(r, ['tgl_alpha', 'tglalpha', 'tanggal_alpha', 'alpha', 'tanggalalpa']));
+                let tIzin  = pendingItem ? parseDates(pendingItem.tglIzin)  : parseDates(window.getValPeka(r, ['tgl_izin', 'tglizin', 'tanggal_izin', 'izin', 'tanggalizin']));
+                let tSakit = pendingItem ? parseDates(pendingItem.tglSakit) : parseDates(window.getValPeka(r, ['tgl_sakit', 'tglsakit', 'tanggal_sakit', 'sakit', 'tanggalsakit']));
                 let statusK = pendingItem ? pendingItem.status : (window.getValPeka(r, ['status_koreksi', 'status', 'koreksi']) || 'Belum Dikoreksi');
                 let ket = pendingItem ? pendingItem.keterangan : (window.getValPeka(r, ['keterangan_taklimda', 'keterangan', 'ket']) || '-');
 
@@ -567,8 +580,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
                 return {
                     ...r,
-                    _id: i,
-                    _rowIndex: r._rowIndex,
+                    _rowIndex: actualRowIndex,
                     _idPps: window.getValPeka(r, ['id_pps', 'idpps', 'id', 'nis']),
                     _nama: window.getValPeka(r, ['nama_santri', 'nama', 'namasantri', 'name']),
                     _domisili: String(window.getValPeka(r, ['domisili', 'daerah', 'kamar'])).toUpperCase(),
@@ -583,11 +595,21 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 };
             });
 
+            if (currentFilterMode === 'alpha') {
+                masterKoreksi = mappedList.filter(x => x._tglAlphaArr.length > 0 || x._isDone);
+            } else if (currentFilterMode === 'izin') {
+                masterKoreksi = mappedList.filter(x => x._tglIzinArr.length > 0 || x._isDone);
+            } else if (currentFilterMode === 'sakit') {
+                masterKoreksi = mappedList.filter(x => x._tglSakitArr.length > 0 || x._isDone);
+            } else {
+                masterKoreksi = mappedList;
+            }
+
             saveLocalCache();
             updateDashboardStats();
             renderKoreksiList();
             updatePendingUI();
-            showToast(`Terhubung: ${masterKoreksi.length} Santri`);
+            showToast(`Terhubung: ${masterKoreksi.length} Santri Mode ${currentFilterMode.toUpperCase()}`);
         } catch(e) {
             console.error(e);
             showToast("Menggunakan data lokal HP (Koneksi terganggu)");
@@ -613,7 +635,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     function setFilter(filterType) {
         activeFilter = filterType;
-        selectedRoom = null; // Reset ke tampilan daftar kamar jika pindah filter
+        selectedRoom = null; 
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${filterType}`).classList.add('active');
         renderKoreksiList();
@@ -634,25 +656,22 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         let searchVal = document.getElementById('search-koreksi').value.toUpperCase().trim();
         container.innerHTML = "";
 
-        // Filter master data berdasarkan filter aktif (belum/selesai) dan pencarian
         let listToShow = masterKoreksi.filter(item => {
             let matchFilter = activeFilter === 'belum' ? !item._isDone : item._isDone;
             let matchSearch = true;
             if (searchVal) {
-                let haystack = `${item._nama} ${item._idPps} ${item._domisili}`.toUpperCase();
+                let haystack = `${item._nama} ${item._idPps} ${item._domisili} ${item.tingkat || ''} ${item.kategori || ''}`.toUpperCase();
                 matchSearch = haystack.includes(searchVal);
             }
             return matchFilter && matchSearch;
         });
 
-        // 1. TAMPILAN JIKA SEDANG MEMBUKA KAMAR SPESIFIK
         if (selectedRoom !== null) {
             let santriDiKamar = listToShow.filter(item => {
                 let room = (item._domisili && item._domisili.trim()) ? item._domisili.trim() : 'LAIN-LAIN';
                 return room === selectedRoom;
             });
 
-            // Header Navigasi Kembali
             let headerDiv = document.createElement('div');
             headerDiv.className = 'room-detail-header fade-in';
             headerDiv.innerHTML = `
@@ -696,6 +715,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 let card = document.createElement('div');
                 card.className = 'santri-card';
 
+                // SOLUSI BUG TOMBOL: MENGGUNAKAN _rowIndex UNIK!
                 card.innerHTML = `
                     <div class="card-top">
                         <div>
@@ -715,8 +735,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
 
                     <div class="card-actions">
-                        <button class="btn-act btn-verify" onclick="markAsSesuai(${item._id})">✔ Sesuai / Benar</button>
-                        <button class="btn-act btn-edit-card" onclick="bukaModalKoreksi(${item._id})">✏ Edit Tanggal</button>
+                        <button class="btn-act btn-verify" onclick="markAsSesuaiByRowIndex(${item._rowIndex})">✔ Sesuai / Benar</button>
+                        <button class="btn-act btn-edit-card" onclick="bukaModalKoreksiByRowIndex(${item._rowIndex})">✏ Edit Tanggal</button>
                     </div>
                 `;
                 listDiv.appendChild(card);
@@ -726,7 +746,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             return;
         }
 
-        // 2. TAMPILAN UTAMA: GRID KOTAK-KOTAK KAMAR
         let grouped = {};
         listToShow.forEach(item => {
             let room = (item._domisili && item._domisili.trim()) ? item._domisili.trim() : 'LAIN-LAIN';
@@ -772,9 +791,9 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         container.appendChild(gridDiv);
     }
 
-    /* PENGIRIMAN DATA / OFFLINE HANDLING */
-    function markAsSesuai(index) {
-        const item = masterKoreksi[index];
+    /* AKSI VERIFIKASI PRESISI (MENGGUNAKAN ROW INDEX) */
+    function markAsSesuaiByRowIndex(rowIndex) {
+        const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
         if (!item) return;
 
         item._statusKoreksi = 'Sesuai (Benar)';
@@ -874,7 +893,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             let res = await fetch(APPS_SCRIPT_URL + "?action=getUsers");
             let users = await res.json();
 
-            let foundUser = users.find(u => u.daerah === currentUser);
+            if (!Array.isArray(users)) {
+                throw new Error("Respon data pengguna dari server tidak valid!");
+            }
+
+            let foundUser = users.find(u => String(u.daerah || u.Daerah || '').trim().toUpperCase() === currentUser);
             
             if (!foundUser || passInput !== foundUser.password) {
                 errDiv.innerText = "❌ Kata Sandi Salah!";
@@ -911,7 +934,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         document.getElementById('view-login').classList.add('active');
     }
 
-    /* FITUR GANTI PASSWORD */
     function bukaModalGantiPass() {
         document.getElementById('pass-daerah-label').innerText = currentUser;
         document.getElementById('pass-lama').value = '';
@@ -979,10 +1001,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
     }
 
-    /* EDIT MODAL TANGGAL SANTRI */
-    function bukaModalKoreksi(index) {
-        activeEditIndex = index;
-        const item = masterKoreksi[index];
+    /* MODAL EDIT TANGGAL PRESISI (DENGAN ROW INDEX) */
+    function bukaModalKoreksiByRowIndex(rowIndex) {
+        activeEditRowIndex = rowIndex;
+        const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
         if (!item) return;
 
         tempSakit = [...(item._tglSakitArr || [])];
@@ -1060,9 +1082,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     }
 
     function saveEditModal() {
-        if (activeEditIndex === null || !masterKoreksi[activeEditIndex]) return;
+        if (activeEditRowIndex === null) return;
+        const item = masterKoreksi.find(x => x._rowIndex === activeEditRowIndex);
+        if (!item) return;
 
-        const item = masterKoreksi[activeEditIndex];
         item._tglSakitArr = tempSakit.sort((a,b)=>a-b);
         item._tglIzinArr = tempIzin.sort((a,b)=>a-b);
         item._tglAlphaArr = tempAlpha.sort((a,b)=>a-b);
