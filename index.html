@@ -33,7 +33,7 @@
 :root {
     --primary: #059669;
     --primary-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    --bg-color: #f8fafc;
+    --bg-color: #f1f5f9;
     --card-bg: #ffffff;
     --text-main: #0f172a;
     --text-muted: #64748b;
@@ -48,54 +48,69 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background-color: var(--bg-color); color: var(--text-main); padding: 10px; max-width: 480px; margin: 0 auto; padding-bottom: 20px; }
+body { background-color: var(--bg-color); color: var(--text-main); padding: 12px; max-width: 480px; margin: 0 auto; padding-bottom: 24px; }
 
 .view { display: none; }
 .view.active { display: block !important; }
 
 /* ANIMASI UI */
-@keyframes slideUp { from { transform: translateY(8px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.slide-up { animation: slideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+.slide-up { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 .fade-in { animation: fadeIn 0.2s ease-in; }
 
 /* TOP DECK HEADER & PROGRESS */
-.top-deck { background: white; border-radius: 18px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 10px; }
-.header-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.avatar { background: var(--primary-gradient); color: white; width: 38px; height: 38px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 16px; font-weight: 800; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
+.top-deck { background: white; border-radius: 20px; padding: 14px 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 12px; }
+.header-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.avatar { background: var(--primary-gradient); color: white; width: 40px; height: 40px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 17px; font-weight: 800; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
 
-.progress-inline { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--border); }
+.progress-inline { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); }
 .progress-bar-bg { flex: 1; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
 .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
 
 /* NETWORK & SYNC BADGE */
-.sync-badge { font-size: 9px; font-weight: 800; padding: 2px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
+.sync-badge { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
 .sync-badge.pending { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
 .sync-badge.online { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
 .sync-badge.offline { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; }
 
 /* CONTROLS ROW */
-.controls-row { display: flex; gap: 6px; margin-bottom: 10px; }
-.search-box-mini { flex: 1; position: relative; }
-.search-box-mini input { width: 100%; padding: 8px 12px 8px 32px; border: 1px solid var(--border); border-radius: 12px; outline: none; background: white; font-size: 12px; font-weight: 600; }
-.search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: 0.5; }
+.controls-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.search-box-mini { width: 100%; position: relative; }
+.search-box-mini input { width: 100%; padding: 10px 14px 10px 36px; border: 1px solid var(--border); border-radius: 14px; outline: none; background: white; font-size: 12px; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: border-color 0.2s; }
+.search-box-mini input:focus { border-color: var(--primary); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.5; }
 
-.filter-tabs { display: flex; gap: 4px; }
-.tab-btn { padding: 8px 10px; border: 1px solid var(--border); background: white; border-radius: 10px; font-size: 10px; font-weight: 800; color: var(--text-muted); cursor: pointer; text-align: center; }
-.tab-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); }
+.filter-tabs { display: flex; gap: 6px; width: 100%; }
+.tab-btn { flex: 1; padding: 10px 12px; border: 1px solid var(--border); background: white; border-radius: 12px; font-size: 11px; font-weight: 800; color: var(--text-muted); cursor: pointer; text-align: center; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.tab-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); box-shadow: 0 4px 12px rgba(15,23,42,0.15); }
 
-/* NEO-CARD SANTRI */
-.santri-list { display: flex; flex-direction: column; gap: 8px; }
-.santri-card { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; transition: transform 0.15s; position: relative; }
+/* GRID KAMAR (KOTAK-KOTAK) */
+.room-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.room-card { background: white; border-radius: 18px; border: 1px solid var(--border); padding: 14px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); position: relative; }
+.room-card:active { transform: scale(0.97); }
+.room-card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.room-card-title { font-size: 13px; font-weight: 800; color: var(--text-main); line-height: 1.2; display: flex; align-items: center; gap: 6px; }
+.room-card-count { background: var(--primary-gradient); color: white; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 10px; }
+.room-card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 8px; font-size: 10px; color: var(--text-muted); font-weight: 700; }
+
+/* DETAIL KAMAR (LIST SANTRI) */
+.room-detail-header { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+.btn-back { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); padding: 8px 12px; border-radius: 10px; font-size: 11px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.15s; }
+.btn-back:active { transform: scale(0.95); }
+
+/* CARD SANTRI */
+.santri-list { display: flex; flex-direction: column; gap: 10px; }
+.santri-card { background: white; border-radius: 16px; padding: 14px; border: 1px solid var(--border); box-shadow: 0 2px 6px rgba(0,0,0,0.015); display: flex; flex-direction: column; gap: 10px; transition: transform 0.15s; }
 .santri-card:active { transform: scale(0.99); }
 
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .santri-nama { font-size: 13px; font-weight: 800; color: var(--text-main); line-height: 1.2; }
-.santri-meta { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+.santri-meta { font-size: 10px; color: var(--text-muted); font-weight: 600; margin-top: 3px; }
 
-.pills-group { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
-.pill-tag { padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; }
+.pills-group { display: flex; gap: 6px; align-items: center; margin-top: 2px; }
+.pill-tag { padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; }
 .pill-sakit { background: var(--sakit-bg); color: var(--sakit-color); }
 .pill-izin { background: var(--izin-bg); color: var(--izin-color); }
 .pill-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
@@ -108,8 +123,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .badge-unsynced { background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 8px; padding: 2px 6px; border-radius: 6px; }
 
 /* TOMBOL AKSI KARTU */
-.card-actions { display: flex; gap: 6px; padding-top: 4px; border-top: 1px dashed #f1f5f9; }
-.btn-act { flex: 1; padding: 7px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.15s; }
+.card-actions { display: flex; gap: 6px; padding-top: 6px; border-top: 1px dashed #e2e8f0; }
+.btn-act { flex: 1; padding: 8px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.15s; }
 .btn-act:active { transform: scale(0.96); }
 
 .btn-verify { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
@@ -119,35 +134,35 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
 .modal-overlay.center-modal { align-items: center; padding: 16px; }
 
-.modal-content { background: white; width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
+.modal-content { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
 .modal-overlay.center-modal .modal-content { border-radius: 20px; max-height: 90vh; }
 
-.modal-header { padding: 12px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
-.modal-body { padding: 14px 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+.modal-header { padding: 14px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
 
-.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; }
-.section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
+.section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-.chips-wrapper { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; min-height: 20px; }
-.chip { padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
+.chips-wrapper { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 24px; }
+.chip { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
 .chip-sakit { background: var(--sakit-bg); color: var(--sakit-color); }
 .chip-izin { background: var(--izin-bg); color: var(--izin-color); }
 .chip-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
 .chip-del { cursor: pointer; opacity: 0.7; font-size: 11px; }
 
 .quick-input-group { display: flex; gap: 6px; }
-.quick-input-group input { width: 60px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: 700; text-align: center; outline: none; }
-.btn-add-chip { padding: 6px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; }
+.quick-input-group input { width: 70px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; outline: none; }
+.btn-add-chip { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; }
 
 /* LOGIN SCREEN */
 #view-login { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; justify-content: center; align-items: center; padding: 16px; z-index: 99999; }
 #view-login.active { display: flex !important; }
-.login-card { background: white; padding: 24px 18px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); width: 100%; border: 1px solid var(--border); text-align: center; }
+.login-card { background: white; padding: 24px 18px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); width: 100%; border: 1px solid var(--border); text-align: center; }
 .alphabet-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 14px; }
-.alpha-btn { padding: 8px 0; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; color: var(--text-main); }
+.alpha-btn { padding: 8px 0; background: #f1f5f9; border: none; border-radius: 8px; font-weight: 800; font-size: 11px; cursor: pointer; color: var(--text-main); transition: 0.15s; }
 .alpha-btn.selected { background: var(--primary); color: white; }
 
-.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 8px 18px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 999999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: center; max-width: 90%; }
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 10px 20px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 999999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: center; max-width: 90%; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
     </style>
 </head>
@@ -158,20 +173,20 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
     <!-- LOGIN MODAL -->
     <div id="view-login" class="view active">
         <div class="login-card slide-up">
-            <div style="width: 48px; height: 48px; background: var(--primary-gradient); color: white; font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 14px; margin: 0 auto 10px;" id="login-logo">?</div>
-            <h2 style="font-size:16px; font-weight:800; color:var(--text-main);">Koreksi Absen</h2>
-            <p style="color:var(--text-muted); font-size:11px; margin-bottom: 14px;">Pondok Pesantren Sidogiri</p>
+            <div style="width: 52px; height: 52px; background: var(--primary-gradient); color: white; font-size: 22px; font-weight: 800; display: flex; align-items: center; justify-content: center; border-radius: 16px; margin: 0 auto 12px; box-shadow: 0 4px 12px rgba(5,150,105,0.25);" id="login-logo">?</div>
+            <h2 style="font-size:17px; font-weight:800; color:var(--text-main);">Koreksi Absen</h2>
+            <p style="color:var(--text-muted); font-size:11px; margin-bottom: 16px;">Pondok Pesantren Sidogiri</p>
             
             <p style="font-size:9px; font-weight:800; text-align:left; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase;">Pilih Daerah</p>
             <div class="alphabet-grid" id="alphabet-grid"></div>
 
-            <div style="text-align:left; margin-bottom:14px;">
+            <div style="text-align:left; margin-bottom:16px;">
                 <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password</label>
-                <input type="password" id="password" placeholder="Masukkan password..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;" oninput="document.getElementById('login-error').style.display='none'; this.style.borderColor='var(--border)';">
+                <input type="password" id="password" placeholder="Masukkan password..." style="width:100%; padding:11px 14px; border:1px solid var(--border); border-radius:12px; font-size:12px; outline:none;" oninput="document.getElementById('login-error').style.display='none'; this.style.borderColor='var(--border)';">
                 <div id="login-error" style="color:#e11d48; font-size:11px; font-weight:800; margin-top:6px; display:none; text-align:left;"></div>
             </div>
             
-            <button class="btn-act" style="background:var(--primary-gradient); color:white; width:100%; padding:12px; font-size:12px;" onclick="login()">Masuk Sistem ➔</button>
+            <button class="btn-act" style="background:var(--primary-gradient); color:white; width:100%; padding:12px; font-size:12px; border-radius:12px;" onclick="login()">Masuk Sistem ➔</button>
         </div>
     </div>
 
@@ -184,7 +199,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                     <div class="avatar" id="nav-avatar">A</div>
                     <div>
                         <div style="display:flex; align-items:center; gap:6px;">
-                            <h3 style="font-size:13px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
+                            <h3 style="font-size:14px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
                             <span id="net-status-badge" class="sync-badge online">● Online</span>
                         </div>
                         <p style="font-size:10px; color:var(--text-muted); font-weight:600;" id="stat-progress-text">0 / 0 Santri Selesai</p>
@@ -203,7 +218,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 </div>
                 <span style="font-size:11px; font-weight:800; color:var(--primary);" id="stat-percent">0%</span>
             </div>
-            <div id="pending-info-bar" style="display:none; font-size:10px; font-weight:800; color:#d97706; background:#fef3c7; border:1px solid #fcd34d; padding:4px 8px; border-radius:8px; margin-top:8px; text-align:center;">
+            <div id="pending-info-bar" style="display:none; font-size:10px; font-weight:800; color:#d97706; background:#fef3c7; border:1px solid #fcd34d; padding:6px 10px; border-radius:10px; margin-top:8px; text-align:center;">
                 ⚠️ Ada <span id="pending-count-num">0</span> data tersimpan offline. Akan otomatis dikirim saat online.
             </div>
         </div>
@@ -212,18 +227,17 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         <div class="controls-row slide-up">
             <div class="search-box-mini">
                 <span class="search-icon">🔍</span>
-                <input type="text" id="search-koreksi" placeholder="Cari Santri..." oninput="renderKoreksiList()">
+                <input type="text" id="search-koreksi" placeholder="Cari Kamar / Nama Santri / ID..." oninput="renderKoreksiList()">
             </div>
             <div class="filter-tabs">
-                <button class="tab-btn active" id="tab-all" onclick="setFilter('all')">Semua (<span id="count-all">0</span>)</button>
-                <button class="tab-btn" id="tab-belum" onclick="setFilter('belum')">Belum (<span id="count-belum">0</span>)</button>
+                <button class="tab-btn active" id="tab-belum" onclick="setFilter('belum')">Belum Dikoreksi (<span id="count-belum">0</span>)</button>
                 <button class="tab-btn" id="tab-sudah" onclick="setFilter('sudah')">Selesai (<span id="count-sudah">0</span>)</button>
             </div>
         </div>
 
-        <!-- LIST SANTRI CARDS -->
-        <div class="santri-list slide-up" id="santri-list-container">
-            <div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Memuat data...</div>
+        <!-- LIST CONTAINER (GRID KAMAR ATAU DAFTAR SANTRI KAMAR) -->
+        <div id="santri-list-container" class="slide-up">
+            <div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Memuat data...</div>
         </div>
     </div>
 
@@ -235,11 +249,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                     <div style="font-size:9px; opacity:0.8; font-weight:800; text-transform:uppercase;">Edit Koreksi Santri</div>
                     <div style="font-size:14px; font-weight:800;" id="edit-nama">Nama Santri</div>
                 </div>
-                <button onclick="closeEditModal()" style="background:rgba(255,255,255,0.2); color:white; border:none; width:26px; height:26px; border-radius:50%; font-size:12px; font-weight:bold;">✕</button>
+                <button onclick="closeEditModal()" style="background:rgba(255,255,255,0.2); color:white; border:none; width:28px; height:28px; border-radius:50%; font-size:12px; font-weight:bold; cursor:pointer;">✕</button>
             </div>
 
             <div class="modal-body">
-                <div style="font-size:11px; color:var(--text-muted); font-weight:600; background:#f1f5f9; padding:6px 10px; border-radius:8px;">
+                <div style="font-size:11px; color:var(--text-muted); font-weight:600; background:#f1f5f9; padding:8px 12px; border-radius:10px;">
                     ID PPS: <b id="edit-pps" style="color:var(--text-main);">-</b> | Kamar: <b id="edit-domisili" style="color:var(--primary);">-</b>
                 </div>
 
@@ -247,7 +261,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div class="section-box">
                     <div class="section-title" style="color:var(--alpha-color);">
                         <span>Tanggal Alpha (A)</span>
-                        <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); border:none; padding:2px 6px; border-radius:4px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
+                        <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
                     <div class="chips-wrapper" id="chips-alpha"></div>
                     <div class="quick-input-group">
@@ -260,7 +274,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div class="section-box">
                     <div class="section-title" style="color:var(--izin-color);">
                         <span>Tanggal Izin (I)</span>
-                        <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); border:none; padding:2px 6px; border-radius:4px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
+                        <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
                     <div class="chips-wrapper" id="chips-izin"></div>
                     <div class="quick-input-group">
@@ -273,7 +287,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 <div class="section-box">
                     <div class="section-title" style="color:var(--sakit-color);">
                         <span>Tanggal Sakit (S)</span>
-                        <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); border:none; padding:2px 6px; border-radius:4px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
+                        <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
                     <div class="chips-wrapper" id="chips-sakit"></div>
                     <div class="quick-input-group">
@@ -284,12 +298,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
                 <div>
                     <label style="font-size:10px; font-weight:800; color:var(--text-muted); display:block; margin-bottom:4px;">KETERANGAN TAKLIMDA</label>
-                    <input type="text" id="edit-ket" placeholder="Contoh: Haddam, Pulang, dll.." style="width:100%; padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-size:11px; outline:none;">
+                    <input type="text" id="edit-ket" placeholder="Contoh: Haddam, Pulang, dll.." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:11px; outline:none;">
                 </div>
 
-                <div style="display:flex; gap:6px; margin-top:4px;">
-                    <button onclick="closeEditModal()" style="flex:1; padding:10px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:10px; font-size:12px; border:none;">Batal</button>
-                    <button onclick="saveEditModal()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:10px; font-size:12px;">Simpan Data ➔</button>
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                    <button onclick="closeEditModal()" style="flex:1; padding:12px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:12px; font-size:12px; border:none; cursor:pointer;">Batal</button>
+                    <button onclick="saveEditModal()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:12px; font-size:12px; border-radius:12px;">Simpan Data ➔</button>
                 </div>
             </div>
         </div>
@@ -303,25 +317,25 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                     <div style="font-size:9px; opacity:0.8; font-weight:800; text-transform:uppercase;">Pengaturan Akun</div>
                     <div style="font-size:14px; font-weight:800;">Ganti Password Daerah <span id="pass-daerah-label">A</span></div>
                 </div>
-                <button onclick="closeGantiPassModal()" style="background:rgba(255,255,255,0.2); color:white; border:none; width:26px; height:26px; border-radius:50%; font-size:12px; font-weight:bold;">✕</button>
+                <button onclick="closeGantiPassModal()" style="background:rgba(255,255,255,0.2); color:white; border:none; width:28px; height:28px; border-radius:50%; font-size:12px; font-weight:bold; cursor:pointer;">✕</button>
             </div>
             <div class="modal-body">
                 <div>
                     <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password Lama</label>
-                    <input type="password" id="pass-lama" placeholder="Password lama..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                    <input type="password" id="pass-lama" placeholder="Password lama..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
                 </div>
                 <div>
                     <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Password Baru</label>
-                    <input type="password" id="pass-baru" placeholder="Masukkan password baru..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                    <input type="password" id="pass-baru" placeholder="Masukkan password baru..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
                 </div>
                 <div>
                     <label style="font-size:9px; font-weight:800; color:var(--text-muted); text-transform:uppercase; display:block; margin-bottom:4px;">Konfirmasi Password Baru</label>
-                    <input type="password" id="pass-konfirm" placeholder="Ulangi password baru..." style="width:100%; padding:10px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
+                    <input type="password" id="pass-konfirm" placeholder="Ulangi password baru..." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:12px; outline:none;">
                 </div>
                 <div id="ganti-pass-error" style="color:#e11d48; font-size:11px; font-weight:800; display:none; text-align:left;"></div>
-                <div style="display:flex; gap:6px; margin-top:8px;">
-                    <button onclick="closeGantiPassModal()" style="flex:1; padding:10px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:10px; font-size:12px; border:none;">Batal</button>
-                    <button onclick="submitGantiPassword()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:10px; font-size:12px;">Simpan Sandi Baru ➔</button>
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                    <button onclick="closeGantiPassModal()" style="flex:1; padding:12px; background:#f1f5f9; color:var(--text-main); font-weight:800; border-radius:12px; font-size:12px; border:none; cursor:pointer;">Batal</button>
+                    <button onclick="submitGantiPassword()" class="btn-act" style="background:var(--primary-gradient); color:white; flex:2; padding:12px; font-size:12px; border-radius:12px;">Simpan Sandi Baru ➔</button>
                 </div>
             </div>
         </div>
@@ -333,7 +347,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
     let currentUser = ""; 
     let masterKoreksi = [];
     let activeEditIndex = null;
-    let activeFilter = 'all';
+    let activeFilter = 'belum'; 
+    let selectedRoom = null; // Menyimpan kamar yang sedang dibuka
     let tempSakit = [], tempIzin = [], tempAlpha = [];
     let isSyncing = false;
 
@@ -342,7 +357,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         checkSavedLogin();
         setupNetworkListeners();
         
-        // Auto-sync antrean offline secara berkala setiap 15 detik jika online
         setInterval(() => {
             if (navigator.onLine) {
                 processPendingQueue();
@@ -472,7 +486,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 if (res.ok) {
                     remaining = remaining.filter(q => q._rowIndex !== item._rowIndex);
                     
-                    // Hilangkan penanda unsynced di memori
                     let mItem = masterKoreksi.find(x => x._rowIndex === item._rowIndex);
                     if (mItem) mItem._unsynced = false;
                     
@@ -480,7 +493,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
                 }
             } catch(e) {
                 console.error("Gagal sync item:", item, e);
-                break; // Hentikan iterasi jika jaringan error
+                break;
             }
         }
 
@@ -518,7 +531,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
 
             if (!Array.isArray(rawData) || rawData.length === 0) {
                 if (masterKoreksi.length === 0) {
-                    container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Data masih kosong.</div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Data masih kosong.</div>`;
                 }
                 return;
             }
@@ -591,15 +604,28 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         document.getElementById('stat-percent').innerText = `${percent}%`;
         document.getElementById('progress-bar-fill').style.width = `${percent}%`;
 
-        document.getElementById('count-all').innerText = total;
-        document.getElementById('count-belum').innerText = belum;
-        document.getElementById('count-sudah').innerText = selesai;
+        let countBelumEl = document.getElementById('count-belum');
+        if (countBelumEl) countBelumEl.innerText = belum;
+
+        let countSudahEl = document.getElementById('count-sudah');
+        if (countSudahEl) countSudahEl.innerText = selesai;
     }
 
     function setFilter(filterType) {
         activeFilter = filterType;
+        selectedRoom = null; // Reset ke tampilan daftar kamar jika pindah filter
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById(`tab-${filterType}`).classList.add('active');
+        renderKoreksiList();
+    }
+
+    function bukaKamar(roomName) {
+        selectedRoom = roomName;
+        renderKoreksiList();
+    }
+
+    function tutupKamar() {
+        selectedRoom = null;
         renderKoreksiList();
     }
 
@@ -608,65 +634,142 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
         let searchVal = document.getElementById('search-koreksi').value.toUpperCase().trim();
         container.innerHTML = "";
 
+        // Filter master data berdasarkan filter aktif (belum/selesai) dan pencarian
         let listToShow = masterKoreksi.filter(item => {
-            let matchFilter = true;
-            if (activeFilter === 'belum') matchFilter = !item._isDone;
-            if (activeFilter === 'sudah') matchFilter = item._isDone;
-
+            let matchFilter = activeFilter === 'belum' ? !item._isDone : item._isDone;
             let matchSearch = true;
             if (searchVal) {
                 let haystack = `${item._nama} ${item._idPps} ${item._domisili}`.toUpperCase();
                 matchSearch = haystack.includes(searchVal);
             }
-
             return matchFilter && matchSearch;
         });
 
-        if (listToShow.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); font-size:12px;">Tidak ada data santri.</div>`;
+        // 1. TAMPILAN JIKA SEDANG MEMBUKA KAMAR SPESIFIK
+        if (selectedRoom !== null) {
+            let santriDiKamar = listToShow.filter(item => {
+                let room = (item._domisili && item._domisili.trim()) ? item._domisili.trim() : 'LAIN-LAIN';
+                return room === selectedRoom;
+            });
+
+            // Header Navigasi Kembali
+            let headerDiv = document.createElement('div');
+            headerDiv.className = 'room-detail-header fade-in';
+            headerDiv.innerHTML = `
+                <button class="btn-back" onclick="tutupKamar()">← Kembali ke Daftar Kamar</button>
+                <div style="text-align:right;">
+                    <div style="font-size:13px; font-weight:800; color:var(--text-main);">Kamar ${selectedRoom}</div>
+                    <div style="font-size:10px; color:var(--text-muted); font-weight:700;">${santriDiKamar.length} Santri</div>
+                </div>
+            `;
+            container.appendChild(headerDiv);
+
+            if (santriDiKamar.length === 0) {
+                let emptyDiv = document.createElement('div');
+                emptyDiv.className = 'fade-in';
+                emptyDiv.style.cssText = 'text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);';
+                emptyDiv.innerHTML = `
+                    <div style="font-size:32px; margin-bottom:8px;">🎉</div>
+                    <div style="font-weight:800; font-size:13px; color:var(--text-main); margin-bottom:4px;">Kamar Ini Sudah Selesai!</div>
+                    <div style="margin-bottom:12px;">Semua santri di Kamar ${selectedRoom} sudah dikoreksi.</div>
+                    <button class="btn-act" style="background:var(--primary-gradient); color:white; padding:10px 16px; margin:0 auto;" onclick="tutupKamar()">Pilih Kamar Lain ➔</button>
+                `;
+                container.appendChild(emptyDiv);
+                return;
+            }
+
+            let listDiv = document.createElement('div');
+            listDiv.className = 'santri-list fade-in';
+
+            santriDiKamar.forEach(item => {
+                let st = item._statusKoreksi.toLowerCase();
+                let badgeHtml = `<span class="badge-status badge-belum">Belum</span>`;
+                
+                if (st.includes('sesuai') || st.includes('benar')) {
+                    badgeHtml = `<span class="badge-status badge-benar">✔ Sesuai</span>`;
+                } else if ((st.includes('sudah') || st.includes('dikoreksi')) && !st.includes('belum')) {
+                    badgeHtml = `<span class="badge-status badge-koreksi">✏ Dikoreksi</span>`;
+                }
+
+                let unsyncedBadge = item._unsynced ? `<span class="badge-unsynced">⏳ Belum Sync</span>` : '';
+
+                let card = document.createElement('div');
+                card.className = 'santri-card';
+
+                card.innerHTML = `
+                    <div class="card-top">
+                        <div>
+                            <div class="santri-nama">${item._nama}</div>
+                            <div class="santri-meta">ID: <b>${item._idPps}</b> • ${item._domisili}</div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                            ${badgeHtml}
+                            ${unsyncedBadge}
+                        </div>
+                    </div>
+
+                    <div class="pills-group">
+                        <span class="pill-tag pill-sakit">Sakit: ${item._tglSakitArr.length}</span>
+                        <span class="pill-tag pill-izin">Izin: ${item._tglIzinArr.length}</span>
+                        <span class="pill-tag pill-alpha">Alpha: ${item._tglAlphaArr.length}</span>
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-act btn-verify" onclick="markAsSesuai(${item._id})">✔ Sesuai / Benar</button>
+                        <button class="btn-act btn-edit-card" onclick="bukaModalKoreksi(${item._id})">✏ Edit Tanggal</button>
+                    </div>
+                `;
+                listDiv.appendChild(card);
+            });
+
+            container.appendChild(listDiv);
             return;
         }
 
+        // 2. TAMPILAN UTAMA: GRID KOTAK-KOTAK KAMAR
+        let grouped = {};
         listToShow.forEach(item => {
-            let st = item._statusKoreksi.toLowerCase();
-            let badgeHtml = `<span class="badge-status badge-belum">Belum</span>`;
-            
-            if (st.includes('sesuai') || st.includes('benar')) {
-                badgeHtml = `<span class="badge-status badge-benar">✔ Sesuai</span>`;
-            } else if ((st.includes('sudah') || st.includes('dikoreksi')) && !st.includes('belum')) {
-                badgeHtml = `<span class="badge-status badge-koreksi">✏ Dikoreksi</span>`;
-            }
+            let room = (item._domisili && item._domisili.trim()) ? item._domisili.trim() : 'LAIN-LAIN';
+            if (!grouped[room]) grouped[room] = [];
+            grouped[room].push(item);
+        });
 
-            let unsyncedBadge = item._unsynced ? `<span class="badge-unsynced">⏳ Belum Sync</span>` : '';
+        let sortedRooms = Object.keys(grouped).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
-            let card = document.createElement('div');
-            card.className = 'santri-card fade-in';
+        if (sortedRooms.length === 0) {
+            let msg = activeFilter === 'belum' ? 'Semua kamar sudah selesai dikoreksi!' : 'Belum ada kamar yang selesai dikoreksi.';
+            if (searchVal) msg = 'Kamar / Santri yang dicari tidak ditemukan.';
+            container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">${msg}</div>`;
+            return;
+        }
 
-            card.innerHTML = `
-                <div class="card-top">
-                    <div>
-                        <div class="santri-nama">${item._nama}</div>
-                        <div class="santri-meta">ID: <b>${item._idPps}</b> • ${item._domisili}</div>
+        let gridDiv = document.createElement('div');
+        gridDiv.className = 'room-grid fade-in';
+
+        sortedRooms.forEach(roomName => {
+            let count = grouped[roomName].length;
+
+            let roomCard = document.createElement('div');
+            roomCard.className = 'room-card';
+            roomCard.onclick = () => bukaKamar(roomName);
+
+            roomCard.innerHTML = `
+                <div class="room-card-header">
+                    <div class="room-card-title">
+                        <span style="font-size:16px;">🚪</span>
+                        <span>Kamar ${roomName}</span>
                     </div>
-                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-                        ${badgeHtml}
-                        ${unsyncedBadge}
-                    </div>
+                    <span class="room-card-count">${count} Santri</span>
                 </div>
-
-                <div class="pills-group">
-                    <span class="pill-tag pill-sakit">Sakit: ${item._tglSakitArr.length}</span>
-                    <span class="pill-tag pill-izin">Izin: ${item._tglIzinArr.length}</span>
-                    <span class="pill-tag pill-alpha">Alpha: ${item._tglAlphaArr.length}</span>
-                </div>
-
-                <div class="card-actions">
-                    <button class="btn-act btn-verify" onclick="markAsSesuai(${item._id})">✔ Sesuai / Benar</button>
-                    <button class="btn-act btn-edit-card" onclick="bukaModalKoreksi(${item._id})">✏ Edit Tanggal</button>
+                <div class="room-card-footer">
+                    <span>${activeFilter === 'belum' ? 'Perlu Koreksi' : 'Selesai'}</span>
+                    <span style="color:var(--primary); font-weight:800;">Buka ➔</span>
                 </div>
             `;
-            container.appendChild(card);
+            gridDiv.appendChild(roomCard);
         });
+
+        container.appendChild(gridDiv);
     }
 
     /* PENGIRIMAN DATA / OFFLINE HANDLING */
@@ -803,6 +906,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 10px
     function logout() {
         localStorage.removeItem('taklimda_daerah');
         currentUser = "";
+        selectedRoom = null;
         document.getElementById('view-koreksi').classList.remove('active');
         document.getElementById('view-login').classList.add('active');
     }
