@@ -237,6 +237,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         </div>
     </div>
 
+    <!-- MODAL POPUP PENGUMUMAN PUSAT -->
+    <div id="modal-broadcast" class="modal-overlay center-modal">
+        <div class="modal-content slide-up" style="max-height:none; max-width:360px; padding:20px; text-align:center;">
+            <div id="bc-icon-badge" style="font-size:36px; margin-bottom:8px;">📢</div>
+            <h3 id="bc-disp-title" style="font-size:15px; font-weight:800; color:var(--text-main); margin-bottom:6px;">Judul Pengumuman</h3>
+            <p id="bc-disp-message" style="font-size:12px; color:var(--text-muted); line-height:1.5; margin-bottom:16px; white-space:pre-line;">Isi pesan pengumuman...</p>
+            <button onclick="closeBroadcastModal()" class="btn-act" style="background:var(--primary-gradient); color:white; width:100%; padding:10px; font-size:12px; border-radius:12px;">Saya Mengerti</button>
+        </div>
+    </div>
+
     <!-- MODAL EDIT KOREKSI ABSEN -->
     <div id="modal-edit-koreksi" class="modal-overlay">
         <div class="modal-content slide-up">
@@ -343,7 +353,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     let currentUser = ""; 
     let masterKoreksi = [];
     let currentFilterMode = "all"; 
-    let activeEditRowIndex = null; // DIREVISI: MENGGUNAKAN ROW INDEX UNIK
+    let activeEditRowIndex = null;
     let activeFilter = 'belum'; 
     let selectedRoom = null; 
     let tempSakit = [], tempIzin = [], tempAlpha = [];
@@ -353,6 +363,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         generateAlphabetGrid();
         checkSavedLogin();
         setupNetworkListeners();
+        checkBroadcastPusat();
         
         setInterval(() => {
             if (navigator.onLine) {
@@ -361,11 +372,39 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }, 15000);
     });
 
+    /* FUNGSI PEKA PENGUMUMAN PUSAT */
+    async function checkBroadcastPusat() {
+        if (!navigator.onLine) return;
+        try {
+            let res = await fetch(APPS_SCRIPT_URL + "?action=getBroadcast");
+            let data = await res.json();
+
+            if (data && data.active && data.message) {
+                document.getElementById('bc-disp-title').innerText = data.title || 'PENGUMUMAN PUSAT';
+                document.getElementById('bc-disp-message').innerText = data.message;
+                
+                let iconEl = document.getElementById('bc-icon-badge');
+                if (data.type === 'danger') iconEl.innerText = '🚨';
+                else if (data.type === 'warning') iconEl.innerText = '⚠️';
+                else iconEl.innerText = '📢';
+
+                document.getElementById('modal-broadcast').style.display = 'flex';
+            }
+        } catch (e) {
+            console.error("Gagal memuat pengumuman pusat:", e);
+        }
+    }
+
+    function closeBroadcastModal() {
+        document.getElementById('modal-broadcast').style.display = 'none';
+    }
+
     function setupNetworkListeners() {
         window.addEventListener('online', () => {
             updateNetworkBadge(true);
             showToast("🌐 Jaringan kembali online. Memulai auto-sync...");
             processPendingQueue();
+            checkBroadcastPusat();
         });
         window.addEventListener('offline', () => {
             updateNetworkBadge(false);
@@ -510,6 +549,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         showToast("Memulai sinkronisasi...");
         await processPendingQueue();
         await fetchKoreksiDataRealtime();
+        checkBroadcastPusat();
     }
 
     async function fetchKoreksiDataRealtime() {
@@ -715,7 +755,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 let card = document.createElement('div');
                 card.className = 'santri-card';
 
-                // SOLUSI BUG TOMBOL: MENGGUNAKAN _rowIndex UNIK!
                 card.innerHTML = `
                     <div class="card-top">
                         <div>
@@ -791,7 +830,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         container.appendChild(gridDiv);
     }
 
-    /* AKSI VERIFIKASI PRESISI (MENGGUNAKAN ROW INDEX) */
     function markAsSesuaiByRowIndex(rowIndex) {
         const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
         if (!item) return;
@@ -916,6 +954,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             
             loadLocalCacheFirst();
             fetchKoreksiDataRealtime();
+            checkBroadcastPusat();
 
         } catch(err) {
             console.error(err);
@@ -1001,7 +1040,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
     }
 
-    /* MODAL EDIT TANGGAL PRESISI (DENGAN ROW INDEX) */
     function bukaModalKoreksiByRowIndex(rowIndex) {
         activeEditRowIndex = rowIndex;
         const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
