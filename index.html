@@ -304,8 +304,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 </div>
 
                 <div>
-                    <label style="font-size:10px; font-weight:800; color:var(--text-muted); display:block; margin-bottom:4px;">KETERANGAN TAKLIMDA</label>
-                    <input type="text" id="edit-ket" placeholder="Contoh: Haddam, Pulang, dll.." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:11px; outline:none;">
+                    <label style="font-size:10px; font-weight:800; color:var(--text-muted); display:block; margin-bottom:4px;">
+                        KETERANGAN TAKLIMDA 
+                        <span id="ket-required-badge" style="color:#e11d48; font-size:9px; font-weight:800; display:none;">*(Wajib diisi karena ada Alpha)</span>
+                    </label>
+                    <input type="text" id="edit-ket" placeholder="Contoh: Haddam, Pulang, dll.." style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:11px; outline:none;" oninput="this.style.borderColor='var(--border)';">
                 </div>
 
                 <div style="display:flex; gap:8px; margin-top:4px;">
@@ -359,12 +362,15 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     let selectedRoom = null; 
     let tempSakit = [], tempIzin = [], tempAlpha = [];
     let isSyncing = false;
+    let globalInitData = null; // Menyimpan cache init tunggal
 
     document.addEventListener("DOMContentLoaded", () => {
         generateAlphabetGrid();
         checkSavedLogin();
         setupNetworkListeners();
-        checkBroadcastPusat();
+        
+        // Memuat semua data init sekaligus dari cache server
+        loadAllInitData();
         
         setInterval(() => {
             if (navigator.onLine) {
@@ -373,24 +379,49 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }, 15000);
     });
 
-    /* FUNGSI PEKA PENGUMUMAN PUSAT */
+    /* FUNGSI PEKA INIT DATA (SATU PANGGILAN API DARI CACHE) */
+    async function loadAllInitData(forceRefresh = false) {
+        if (!navigator.onLine) return globalInitData;
+        if (globalInitData && !forceRefresh) return globalInitData;
+
+        try {
+            let res = await fetch(APPS_SCRIPT_URL + "?action=getAllInitData");
+            let json = await res.json();
+            if (json && json.status === 'success') {
+                globalInitData = json;
+                return json;
+            }
+        } catch(e) {
+            console.error("Gagal mengambil init data:", e);
+        }
+        return null;
+    }
+
+    /* PENGUMUMAN PUSAT REVISI */
+    function applyBroadcast(data) {
+        if (data && data.active && data.message) {
+            document.getElementById('bc-disp-title').innerText = data.title || 'PENGUMUMAN PUSAT';
+            document.getElementById('bc-disp-message').innerText = data.message;
+            
+            let iconEl = document.getElementById('bc-icon-badge');
+            if (data.type === 'danger') iconEl.innerText = '🚨';
+            else if (data.type === 'warning') iconEl.innerText = '⚠️';
+            else iconEl.innerText = '📢';
+
+            document.getElementById('modal-broadcast').style.display = 'flex';
+        }
+    }
+
     async function checkBroadcastPusat() {
         if (!navigator.onLine) return;
+        if (globalInitData && globalInitData.broadcast) {
+            applyBroadcast(globalInitData.broadcast);
+            return;
+        }
         try {
             let res = await fetch(APPS_SCRIPT_URL + "?action=getBroadcast");
             let data = await res.json();
-
-            if (data && data.active && data.message) {
-                document.getElementById('bc-disp-title').innerText = data.title || 'PENGUMUMAN PUSAT';
-                document.getElementById('bc-disp-message').innerText = data.message;
-                
-                let iconEl = document.getElementById('bc-icon-badge');
-                if (data.type === 'danger') iconEl.innerText = '🚨';
-                else if (data.type === 'warning') iconEl.innerText = '⚠️';
-                else iconEl.innerText = '📢';
-
-                document.getElementById('modal-broadcast').style.display = 'flex';
-            }
+            applyBroadcast(data);
         } catch (e) {
             console.error("Gagal memuat pengumuman pusat:", e);
         }
@@ -549,8 +580,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
         showToast("Memulai sinkronisasi...");
         await processPendingQueue();
+        await loadAllInitData(true); // paksa refresh data init dari server
         await fetchKoreksiDataRealtime();
-        checkBroadcastPusat();
     }
 
     async function fetchKoreksiDataRealtime() {
@@ -562,10 +593,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         let container = document.getElementById('santri-list-container');
 
         try {
-            let resC = await fetch(APPS_SCRIPT_URL + "?action=getConfig");
-            let jsonC = await resC.json();
-            if (jsonC && jsonC.filterAbsen) {
-                currentFilterMode = jsonC.filterAbsen.toLowerCase();
+            let initData = await loadAllInitData();
+
+            // 1. Ambil Pengaturan Config
+            if (initData && initData.config && initData.config.filterAbsen) {
+                currentFilterMode = initData.config.filterAbsen.toLowerCase();
             }
 
             let bannerEl = document.getElementById('mode-banner-el');
@@ -579,8 +611,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 }
             }
 
-            let res = await fetch(APPS_SCRIPT_URL);
-            let rawData = await res.json();
+            // 2. Ambil Broadcast jika ada
+            if (initData && initData.broadcast) {
+                applyBroadcast(initData.broadcast);
+            }
+
+            // 3. Ambil Rekap Absen
+            let rawData = (initData && initData.rekap) ? initData.rekap : [];
 
             if (!Array.isArray(rawData) || rawData.length === 0) {
                 if (masterKoreksi.length === 0) {
@@ -598,11 +635,15 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 return [];
             }
 
+            // REVISI FILTER DOMISILI PRESISI (R 01, S-03, B-11, T-D6, DLL)
             let filtered = rawData.filter(r => {
                 let dom = String(window.getValPeka(r, ['domisili', 'daerah', 'kamar', 'wilayah']) || '').toUpperCase().trim();
                 let curr = String(currentUser || '').toUpperCase().trim();
                 if (!curr) return true;
-                return dom === curr || (dom.startsWith(curr) && !/^[A-Z]$/.test(dom.charAt(curr.length)));
+                
+                if (!dom.startsWith(curr)) return false;
+                let nextChar = dom.charAt(curr.length);
+                return !nextChar || !/^[A-Z]/.test(nextChar);
             });
 
             let pendingQueue = getPendingQueue();
@@ -831,9 +872,27 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         container.appendChild(gridDiv);
     }
 
+    /* REVISI VALIDASI "KETERANGAN" JIKA ADA ALPHA SAAT KLIK SESUAI */
     function markAsSesuaiByRowIndex(rowIndex) {
         const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
         if (!item) return;
+
+        let hasAlpha = item._tglAlphaArr && item._tglAlphaArr.length > 0;
+        let currentKet = (item._keterangan || '').trim();
+
+        // Jika ada Alpha & Keterangan kosong -> Tolak verifikasi langsung & arahkan ke Edit Modal
+        if (hasAlpha && (!currentKet || currentKet === '-')) {
+            showToast("⚠️ Ada Alpha! Wajib isi Keterangan (klik Edit Tanggal).");
+            bukaModalKoreksiByRowIndex(rowIndex);
+            setTimeout(() => {
+                let inputKet = document.getElementById('edit-ket');
+                if (inputKet) {
+                    inputKet.style.borderColor = '#e11d48';
+                    inputKet.focus();
+                }
+            }, 300);
+            return;
+        }
 
         item._statusKoreksi = 'Sesuai (Benar)';
         item._isDone = true;
@@ -904,6 +963,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         });
     }
 
+    /* REVISI LOGIN (MENGGUNAKAN GLOBAL INIT DATA) */
     async function login() {
         const passInput = document.getElementById('password').value.trim();
         const errDiv = document.getElementById('login-error');
@@ -929,8 +989,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         showToast("Memeriksa kata sandi...");
 
         try {
-            let res = await fetch(APPS_SCRIPT_URL + "?action=getUsers");
-            let users = await res.json();
+            let initData = await loadAllInitData();
+            let users = initData ? initData.users : null;
+
+            if (!users || !Array.isArray(users)) {
+                let res = await fetch(APPS_SCRIPT_URL + "?action=getUsers");
+                users = await res.json();
+            }
 
             if (!Array.isArray(users)) {
                 throw new Error("Respon data pengguna dari server tidak valid!");
@@ -955,7 +1020,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             
             loadLocalCacheFirst();
             fetchKoreksiDataRealtime();
-            checkBroadcastPusat();
 
         } catch(err) {
             console.error(err);
@@ -1075,6 +1139,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         setChips('chips-alpha', tempAlpha, 'alpha', 'chip-alpha');
         setChips('chips-izin', tempIzin, 'izin', 'chip-izin');
         setChips('chips-sakit', tempSakit, 'sakit', 'chip-sakit');
+
+        // Tampilkan label Wajib jika ada tanggal Alpha
+        let reqBadge = document.getElementById('ket-required-badge');
+        if (reqBadge) {
+            reqBadge.style.display = tempAlpha.length > 0 ? 'inline' : 'none';
+        }
     }
 
     function hapusTanggal(type, tgl) {
@@ -1120,15 +1190,29 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         document.getElementById('modal-edit-koreksi').style.display = 'none';
     }
 
+    /* REVISI VALIDASI "KETERANGAN" JIKA ADA ALPHA SAAT SIMPAN MODAL EDIT */
     function saveEditModal() {
         if (activeEditRowIndex === null) return;
         const item = masterKoreksi.find(x => x._rowIndex === activeEditRowIndex);
         if (!item) return;
 
+        let ketVal = document.getElementById('edit-ket').value.trim();
+
+        // Validasi: Jika ada tanggal Alpha, Keterangan WAJIB diisi
+        if (tempAlpha.length > 0 && (!ketVal || ketVal === '-' || ketVal === '')) {
+            showToast("⚠️ Wajib mengisi KETERANGAN karena santri memiliki Tanggal Alpha!");
+            let inputKet = document.getElementById('edit-ket');
+            if (inputKet) {
+                inputKet.style.borderColor = '#e11d48';
+                inputKet.focus();
+            }
+            return;
+        }
+
         item._tglSakitArr = tempSakit.sort((a,b)=>a-b);
         item._tglIzinArr = tempIzin.sort((a,b)=>a-b);
         item._tglAlphaArr = tempAlpha.sort((a,b)=>a-b);
-        item._keterangan = document.getElementById('edit-ket').value.trim() || '-';
+        item._keterangan = ketVal || '-';
         item._statusKoreksi = 'Sudah Dikoreksi';
         item._isDone = true;
         item._unsynced = true;
