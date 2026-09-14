@@ -584,49 +584,59 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         await fetchKoreksiDataRealtime();
     }
 
-	async function fetchKoreksiDataRealtime() {
-		if (!navigator.onLine) {
-			showToast("Offline: Menampilkan data tersimpan di HP");
-			return;
-		}
+async function fetchKoreksiDataRealtime() {
+    if (!navigator.onLine) {
+        showToast("Offline: Menampilkan data tersimpan di HP");
+        return;
+    }
 
-		let container = document.getElementById('santri-list-container');
+    let container = document.getElementById('santri-list-container');
 
-		try {
-			let initData = await loadAllInitData();
+    try {
+        let initData = await loadAllInitData();
 
-			// 1. Ambil Pengaturan Config
-			if (initData && initData.config && initData.config.filterAbsen) {
-				currentFilterMode = initData.config.filterAbsen.toLowerCase();
-			}
+        // 1. Ambil Pengaturan Config
+        if (initData && initData.config && initData.config.filterAbsen) {
+            currentFilterMode = initData.config.filterAbsen.toLowerCase();
+        }
 
-			let bannerEl = document.getElementById('mode-banner-el');
-			if (bannerEl) {
-				if (currentFilterMode && currentFilterMode !== 'all') {
-					bannerEl.className = `mode-banner ${currentFilterMode}`;
-					bannerEl.innerText = `📢 Mode Koreksi Aktif: FOKUS DATA ${currentFilterMode.toUpperCase()}`;
-					bannerEl.style.display = 'block';
-				} else {
-					bannerEl.style.display = 'none';
-				}
-			}
+        let bannerEl = document.getElementById('mode-banner-el');
+        if (bannerEl) {
+            if (currentFilterMode && currentFilterMode !== 'all') {
+                bannerEl.className = `mode-banner ${currentFilterMode}`;
+                bannerEl.innerText = `📢 Mode Koreksi Aktif: FOKUS DATA ${currentFilterMode.toUpperCase()}`;
+                bannerEl.style.display = 'block';
+            } else {
+                bannerEl.style.display = 'none';
+            }
+        }
 
-			// 2. Ambil Broadcast jika ada
-			if (initData && initData.broadcast) {
-				applyBroadcast(initData.broadcast);
-			}
+        // 2. Ambil Broadcast jika ada
+        if (initData && initData.broadcast) {
+            applyBroadcast(initData.broadcast);
+        }
 
-			// 3. Ambil Rekap Absen
-			let rawData = (initData && initData.rekap) ? initData.rekap : [];
+        // 3. Ambil Rekap Absen
+        let rawData = (initData && initData.rekap) ? initData.rekap : [];
 
-			// ===== PERBAIKAN BUG DI SINI =====
-			if (!Array.isArray(rawData) || rawData.length === 0) {
-				masterKoreksi = []; // 1. Reset data di memori HP
-				saveLocalCache();   // 2. Timpa LocalStorage HP menjadi kosong
-				updateDashboardStats(); // 3. Update stat ke 0%
-				container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Data pekan ini masih kosong / sudah diarsip.</div>`;
-				return;
-			}
+        // ===== PERBAIKAN BUG DI SINI =====
+        if (!Array.isArray(rawData) || rawData.length === 0) {
+            masterKoreksi = []; // 1. Reset data di memori HP
+            saveLocalCache();   // 2. Timpa LocalStorage HP menjadi kosong
+            updateDashboardStats(); // 3. Update stat ke 0%
+            container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Data pekan ini masih kosong / sudah diarsip.</div>`;
+            return;
+        }
+        // ==================================
+
+        function parseDates(val) {
+            if (Array.isArray(val)) return val.map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+            if (typeof val === 'number') return [val];
+            if (typeof val === 'string' && val.trim()) {
+                return val.replace(/[/;]/g, ',').split(',').map(x => parseInt(x.trim(), 10)).filter(x => !isNaN(x));
+            }
+            return [];
+        }
 			// ==================================
 
 			function parseDates(val) {
