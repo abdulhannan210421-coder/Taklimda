@@ -362,14 +362,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     let selectedRoom = null; 
     let tempSakit = [], tempIzin = [], tempAlpha = [];
     let isSyncing = false;
-    let globalInitData = null; // Menyimpan cache init tunggal
+    let globalInitData = null;
 
     document.addEventListener("DOMContentLoaded", () => {
         generateAlphabetGrid();
         checkSavedLogin();
         setupNetworkListeners();
         
-        // Memuat semua data init sekaligus dari cache server
         loadAllInitData();
         
         setInterval(() => {
@@ -379,7 +378,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }, 15000);
     });
 
-    /* FUNGSI PEKA INIT DATA (SATU PANGGILAN API DARI CACHE) */
     async function loadAllInitData(forceRefresh = false) {
         if (!navigator.onLine) return globalInitData;
         if (globalInitData && !forceRefresh) return globalInitData;
@@ -397,7 +395,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         return null;
     }
 
-    /* PENGUMUMAN PUSAT REVISI */
     function applyBroadcast(data) {
         if (data && data.active && data.message) {
             document.getElementById('bc-disp-title').innerText = data.title || 'PENGUMUMAN PUSAT';
@@ -580,75 +577,63 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
         showToast("Memulai sinkronisasi...");
         await processPendingQueue();
-        await loadAllInitData(true); // paksa refresh data init dari server
+        await loadAllInitData(true);
         await fetchKoreksiDataRealtime();
     }
 
-async function fetchKoreksiDataRealtime() {
-    if (!navigator.onLine) {
-        showToast("Offline: Menampilkan data tersimpan di HP");
-        return;
-    }
-
-    let container = document.getElementById('santri-list-container');
-
-    try {
-        let initData = await loadAllInitData();
-
-        // 1. Ambil Pengaturan Config
-        if (initData && initData.config && initData.config.filterAbsen) {
-            currentFilterMode = initData.config.filterAbsen.toLowerCase();
-        }
-
-        let bannerEl = document.getElementById('mode-banner-el');
-        if (bannerEl) {
-            if (currentFilterMode && currentFilterMode !== 'all') {
-                bannerEl.className = `mode-banner ${currentFilterMode}`;
-                bannerEl.innerText = `📢 Mode Koreksi Aktif: FOKUS DATA ${currentFilterMode.toUpperCase()}`;
-                bannerEl.style.display = 'block';
-            } else {
-                bannerEl.style.display = 'none';
-            }
-        }
-
-        // 2. Ambil Broadcast jika ada
-        if (initData && initData.broadcast) {
-            applyBroadcast(initData.broadcast);
-        }
-
-        // 3. Ambil Rekap Absen
-        let rawData = (initData && initData.rekap) ? initData.rekap : [];
-
-        // ===== PERBAIKAN BUG DI SINI =====
-        if (!Array.isArray(rawData) || rawData.length === 0) {
-            masterKoreksi = []; // 1. Reset data di memori HP
-            saveLocalCache();   // 2. Timpa LocalStorage HP menjadi kosong
-            updateDashboardStats(); // 3. Update stat ke 0%
-            container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Data pekan ini masih kosong / sudah diarsip.</div>`;
+    async function fetchKoreksiDataRealtime() {
+        if (!navigator.onLine) {
+            showToast("Offline: Menampilkan data tersimpan di HP");
             return;
         }
-        // ==================================
 
-        function parseDates(val) {
-            if (Array.isArray(val)) return val.map(x => parseInt(x, 10)).filter(x => !isNaN(x));
-            if (typeof val === 'number') return [val];
-            if (typeof val === 'string' && val.trim()) {
-                return val.replace(/[/;]/g, ',').split(',').map(x => parseInt(x.trim(), 10)).filter(x => !isNaN(x));
+        let container = document.getElementById('santri-list-container');
+
+        try {
+            let initData = await loadAllInitData();
+
+            // 1. Ambil Pengaturan Config
+            if (initData && initData.config && initData.config.filterAbsen) {
+                currentFilterMode = initData.config.filterAbsen.toLowerCase();
             }
-            return [];
-        }
-			// ==================================
 
-			function parseDates(val) {
-				if (Array.isArray(val)) return val.map(x => parseInt(x, 10)).filter(x => !isNaN(x));
-				if (typeof val === 'number') return [val];
-				if (typeof val === 'string' && val.trim()) {
-					return val.replace(/[/;]/g, ',').split(',').map(x => parseInt(x.trim(), 10)).filter(x => !isNaN(x));
-				}
-				return [];
-			}
+            let bannerEl = document.getElementById('mode-banner-el');
+            if (bannerEl) {
+                if (currentFilterMode && currentFilterMode !== 'all') {
+                    bannerEl.className = `mode-banner ${currentFilterMode}`;
+                    bannerEl.innerText = `📢 Mode Koreksi Aktif: FOKUS DATA ${currentFilterMode.toUpperCase()}`;
+                    bannerEl.style.display = 'block';
+                } else {
+                    bannerEl.style.display = 'none';
+                }
+            }
 
-            // REVISI FILTER DOMISILI PRESISI (R 01, S-03, B-11, T-D6, DLL)
+            // 2. Ambil Broadcast jika ada
+            if (initData && initData.broadcast) {
+                applyBroadcast(initData.broadcast);
+            }
+
+            // 3. Ambil Rekap Absen & FILTER HANYA DATA SHEET KOREKSI_ABSEN
+            let allRekap = (initData && initData.rekap) ? initData.rekap : [];
+            let rawData = allRekap.filter(r => r._source === 'koreksi' || !r._source);
+
+            if (!Array.isArray(rawData) || rawData.length === 0) {
+                masterKoreksi = [];
+                saveLocalCache();
+                updateDashboardStats();
+                container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Data pekan ini masih kosong / sudah diarsip.</div>`;
+                return;
+            }
+
+            function parseDates(val) {
+                if (Array.isArray(val)) return val.map(x => parseInt(x, 10)).filter(x => !isNaN(x));
+                if (typeof val === 'number') return [val];
+                if (typeof val === 'string' && val.trim()) {
+                    return val.replace(/[/;]/g, ',').split(',').map(x => parseInt(x.trim(), 10)).filter(x => !isNaN(x));
+                }
+                return [];
+            }
+
             let filtered = rawData.filter(r => {
                 let dom = String(window.getValPeka(r, ['domisili', 'daerah', 'kamar', 'wilayah']) || '').toUpperCase().trim();
                 let curr = String(currentUser || '').toUpperCase().trim();
@@ -704,7 +689,7 @@ async function fetchKoreksiDataRealtime() {
             updateDashboardStats();
             renderKoreksiList();
             updatePendingUI();
-            showToast(`Terhubung: ${masterKoreksi.length} Santri Mode ${currentFilterMode.toUpperCase()}`);
+            showToast(`Terhubung: ${masterKoreksi.length} Santri Pekan Ini (${currentFilterMode.toUpperCase()})`);
         } catch(e) {
             console.error(e);
             showToast("Menggunakan data lokal HP (Koneksi terganggu)");
@@ -885,7 +870,6 @@ async function fetchKoreksiDataRealtime() {
         container.appendChild(gridDiv);
     }
 
-    /* REVISI VALIDASI "KETERANGAN" JIKA ADA ALPHA SAAT KLIK SESUAI */
     function markAsSesuaiByRowIndex(rowIndex) {
         const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
         if (!item) return;
@@ -893,7 +877,6 @@ async function fetchKoreksiDataRealtime() {
         let hasAlpha = item._tglAlphaArr && item._tglAlphaArr.length > 0;
         let currentKet = (item._keterangan || '').trim();
 
-        // Jika ada Alpha & Keterangan kosong -> Tolak verifikasi langsung & arahkan ke Edit Modal
         if (hasAlpha && (!currentKet || currentKet === '-')) {
             showToast("⚠️ Ada Alpha! Wajib isi Keterangan (klik Edit Tanggal).");
             bukaModalKoreksiByRowIndex(rowIndex);
@@ -976,7 +959,6 @@ async function fetchKoreksiDataRealtime() {
         });
     }
 
-    /* REVISI LOGIN (MENGGUNAKAN GLOBAL INIT DATA) */
     async function login() {
         const passInput = document.getElementById('password').value.trim();
         const errDiv = document.getElementById('login-error');
@@ -1096,7 +1078,7 @@ async function fetchKoreksiDataRealtime() {
             let res = await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
                 body: JSON.stringify({
-                    action: 'changePassword',
+                    action: 'updatePassword',
                     daerah: currentUser,
                     oldPassword: passLama,
                     newPassword: passBaru
@@ -1153,7 +1135,6 @@ async function fetchKoreksiDataRealtime() {
         setChips('chips-izin', tempIzin, 'izin', 'chip-izin');
         setChips('chips-sakit', tempSakit, 'sakit', 'chip-sakit');
 
-        // Tampilkan label Wajib jika ada tanggal Alpha
         let reqBadge = document.getElementById('ket-required-badge');
         if (reqBadge) {
             reqBadge.style.display = tempAlpha.length > 0 ? 'inline' : 'none';
@@ -1203,7 +1184,6 @@ async function fetchKoreksiDataRealtime() {
         document.getElementById('modal-edit-koreksi').style.display = 'none';
     }
 
-    /* REVISI VALIDASI "KETERANGAN" JIKA ADA ALPHA SAAT SIMPAN MODAL EDIT */
     function saveEditModal() {
         if (activeEditRowIndex === null) return;
         const item = masterKoreksi.find(x => x._rowIndex === activeEditRowIndex);
@@ -1211,7 +1191,6 @@ async function fetchKoreksiDataRealtime() {
 
         let ketVal = document.getElementById('edit-ket').value.trim();
 
-        // Validasi: Jika ada tanggal Alpha, Keterangan WAJIB diisi
         if (tempAlpha.length > 0 && (!ketVal || ketVal === '-' || ketVal === '')) {
             showToast("⚠️ Wajib mengisi KETERANGAN karena santri memiliki Tanggal Alpha!");
             let inputKet = document.getElementById('edit-ket');
