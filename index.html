@@ -546,13 +546,20 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                         data: item
                     })
                 });
-                if (res.ok) {
+                
+                let jsonRes = await res.json();
+
+                if (res.ok && jsonRes.status === 'success') {
                     remaining = remaining.filter(q => q._rowIndex !== item._rowIndex);
                     
                     let mItem = masterKoreksi.find(x => x._rowIndex === item._rowIndex);
                     if (mItem) mItem._unsynced = false;
                     
                     successCount++;
+                } else if (jsonRes.status === 'error') {
+                    // Ditolak server (misal karena pekan sudah direset), hapus dari antrean offline HP
+                    remaining = remaining.filter(q => q._rowIndex !== item._rowIndex);
+                    showToast("⚠️ " + (jsonRes.message || "Gagal sinkronisasi data"));
                 }
             } catch(e) {
                 console.error("Gagal sync item:", item, e);
@@ -900,6 +907,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
         let dataPayload = {
             _rowIndex: item._rowIndex,
+            _idPps: item._idPps,
             tglSakit: item._tglSakitArr.join(', '),
             tglIzin: item._tglIzinArr.join(', '),
             tglAlpha: item._tglAlphaArr.join(', '),
@@ -926,12 +934,20 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     data: dataPayload
                 })
             });
-            if (res.ok) {
+            
+            let jsonRes = await res.json();
+            
+            if (res.ok && jsonRes.status === 'success') {
                 showToast("✔ Data berhasil dikirim ke pusat");
                 let mItem = masterKoreksi.find(x => x._rowIndex === dataPayload._rowIndex);
                 if (mItem) mItem._unsynced = false;
                 saveLocalCache();
                 renderKoreksiList();
+            } else if (jsonRes.status === 'error') {
+                showToast("⚠️ " + (jsonRes.message || "Server menolak pembaruan data."));
+                let queue = getPendingQueue();
+                queue = queue.filter(q => q._rowIndex !== dataPayload._rowIndex);
+                savePendingQueue(queue);
             } else {
                 throw new Error("Respon server gagal");
             }
@@ -1216,6 +1232,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
         let dataPayload = {
             _rowIndex: item._rowIndex,
+            _idPps: item._idPps,
             tglSakit: item._tglSakitArr.join(', '),
             tglIzin: item._tglIzinArr.join(', '),
             tglAlpha: item._tglAlphaArr.join(', '),
