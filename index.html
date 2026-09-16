@@ -160,6 +160,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
 .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #0f172a; color: white; padding: 10px 20px; border-radius: 25px; font-size: 11px; font-weight: 700; opacity: 0; transition: 0.25s; z-index: 999999; pointer-events: none; box-shadow: 0 8px 20px rgba(0,0,0,0.2); text-align: center; max-width: 90%; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(-4px); }
+
+/* STYLE FOTO SANTRI MODAL */
+.photo-container { display: flex; justify-content: center; align-items: center; margin-bottom: 4px; }
+.photo-img { width: 85px; height: 110px; object-fit: cover; border-radius: 12px; border: 2px solid var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); background: #f8fafc; }
+.photo-placeholder { width: 85px; height: 110px; border-radius: 12px; border: 2px dashed var(--border); background: #f8fafc; display: flex; align-items: center; justify-content: center; font-size: 32px; }
     </style>
 </head>
 <body>
@@ -261,7 +266,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             </div>
 
             <div class="modal-body">
-                <div style="font-size:11px; color:var(--text-muted); font-weight:600; background:#f1f5f9; padding:8px 12px; border-radius:10px;">
+                <!-- DISPLAY FOTO SANTRI -->
+                <div class="photo-container">
+                    <img id="edit-foto" src="" alt="Foto Santri" class="photo-img" style="display:none;" onerror="this.style.display='none'; document.getElementById('edit-foto-placeholder').style.display='flex';">
+                    <div id="edit-foto-placeholder" class="photo-placeholder">👤</div>
+                </div>
+
+                <div style="font-size:11px; color:var(--text-muted); font-weight:600; background:#f1f5f9; padding:8px 12px; border-radius:10px; text-align:center;">
                     ID PPS: <b id="edit-pps" style="color:var(--text-main);">-</b> | Kamar: <b id="edit-domisili" style="color:var(--primary);">-</b>
                 </div>
 
@@ -376,7 +387,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             let digits = part.replace(/\D/g, '');
             if (!digits) return;
 
-            // Jika ditulis tanpa pemisah (misal: 01020304), otomatis dipisah per 2 digit
             if (digits.length > 2) {
                 for (let i = 0; i < digits.length; i += 2) {
                     let chunk = digits.substring(i, i + 2);
@@ -389,7 +399,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             }
         });
 
-        // Hilangkan angka duplikat
         return Array.from(new Set(result));
     }
 
@@ -688,6 +697,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     _nama: window.getValPeka(r, ['nama_santri', 'nama', 'namasantri', 'name']),
                     _domisili: String(window.getValPeka(r, ['domisili', 'daerah', 'kamar'])).toUpperCase(),
                     _jalsah: window.getValPeka(r, ['jalsah', 'kelompok', 'kelas']) || '-',
+                    _foto: window.getValPeka(r, ['foto', 'fotourl', 'urlfoto', 'linkfoto']), // BACA LINK FOTO
                     _tglAlphaArr: tAlpha,
                     _tglIzinArr: tIzin,
                     _tglSakitArr: tSakit,
@@ -1146,6 +1156,19 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         document.getElementById('edit-domisili').innerText = item._domisili || '-';
         document.getElementById('edit-ket').value = item._keterangan !== '-' ? item._keterangan : '';
 
+        // PROSES SET FOTO SANTRI
+        let fotoImg = document.getElementById('edit-foto');
+        let fotoPlaceholder = document.getElementById('edit-foto-placeholder');
+
+        if (item._foto && item._foto.trim() !== '') {
+            fotoImg.src = item._foto;
+            fotoImg.style.display = 'block';
+            fotoPlaceholder.style.display = 'none';
+        } else {
+            fotoImg.style.display = 'none';
+            fotoPlaceholder.style.display = 'flex';
+        }
+
         renderChips();
         document.getElementById('modal-edit-koreksi').style.display = 'flex';
     }
@@ -1188,7 +1211,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         const rawVal = el.value.trim();
         if (!rawVal) return;
 
-        // Memproses input dengan parser pintar
         const parsedDates = parseDates(rawVal);
         if (parsedDates.length === 0) {
             showToast("⚠️ Tanggal tidak valid (harus 1-31)");
