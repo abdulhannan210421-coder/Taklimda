@@ -146,9 +146,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .chip-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
 .chip-del { cursor: pointer; opacity: 0.7; font-size: 11px; }
 
-.quick-input-group { display: flex; gap: 6px; }
-.quick-input-group input { width: 70px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 700; text-align: center; outline: none; }
-.btn-add-chip { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; }
+.quick-input-group { display: flex; gap: 6px; width: 100%; }
+.quick-input-group input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; text-align: left; outline: none; transition: border-color 0.2s; }
+.quick-input-group input:focus { border-color: var(--primary); }
+.btn-add-chip { padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; white-space: nowrap; }
 
 #view-login { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f8fafc; justify-content: center; align-items: center; padding: 16px; z-index: 99999; }
 #view-login.active { display: flex !important; }
@@ -272,7 +273,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                     <div class="chips-wrapper" id="chips-alpha"></div>
                     <div class="quick-input-group">
-                        <input type="text" id="input-add-alpha" maxlength="2" inputmode="numeric" placeholder="Tgl" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)">
+                        <input type="text" id="input-add-alpha" placeholder="Misal: 1, 2, 3 atau 010203..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('alpha');}">
                         <button onclick="tambahTanggal('alpha')" class="btn-add-chip" style="background:var(--alpha-color);">+ Alpha</button>
                     </div>
                 </div>
@@ -285,7 +286,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                     <div class="chips-wrapper" id="chips-izin"></div>
                     <div class="quick-input-group">
-                        <input type="text" id="input-add-izin" maxlength="2" inputmode="numeric" placeholder="Tgl" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)">
+                        <input type="text" id="input-add-izin" placeholder="Misal: 1, 2, 3 atau 010203..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('izin');}">
                         <button onclick="tambahTanggal('izin')" class="btn-add-chip" style="background:var(--izin-color);">+ Izin</button>
                     </div>
                 </div>
@@ -298,7 +299,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                     <div class="chips-wrapper" id="chips-sakit"></div>
                     <div class="quick-input-group">
-                        <input type="text" id="input-add-sakit" maxlength="2" inputmode="numeric" placeholder="Tgl" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)">
+                        <input type="text" id="input-add-sakit" placeholder="Misal: 1, 2, 3 atau 010203..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('sakit');}">
                         <button onclick="tambahTanggal('sakit')" class="btn-add-chip" style="background:var(--sakit-color);">+ Sakit</button>
                     </div>
                 </div>
@@ -364,7 +365,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     let isSyncing = false;
     let globalInitData = null;
 
-    // FUNGSI PEMBERSIH & PEMISAH TANGGAL OTOMATIS (SMART PARSER)
+    // FUNGSI PEMBERSIH & PEMISAH TANGGAL PINTAR
     function parseDates(val) {
         if (!val && val !== 0) return [];
         let str = Array.isArray(val) ? val.join(',') : String(val);
@@ -375,7 +376,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             let digits = part.replace(/\D/g, '');
             if (!digits) return;
 
-            // Jika lebih dari 2 digit (misal 2003), otomatis dipisah per 2 digit
+            // Jika ditulis tanpa pemisah (misal: 01020304), otomatis dipisah per 2 digit
             if (digits.length > 2) {
                 for (let i = 0; i < digits.length; i += 2) {
                     let chunk = digits.substring(i, i + 2);
@@ -388,7 +389,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             }
         });
 
-        // Hapus duplikat angka
+        // Hilangkan angka duplikat
         return Array.from(new Set(result));
     }
 
