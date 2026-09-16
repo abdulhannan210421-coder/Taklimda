@@ -272,7 +272,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                     <div class="chips-wrapper" id="chips-alpha"></div>
                     <div class="quick-input-group">
-                        <input type="number" id="input-add-alpha" min="1" max="31" placeholder="Tgl">
+                        <input type="text" id="input-add-alpha" maxlength="2" inputmode="numeric" placeholder="Tgl" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)">
                         <button onclick="tambahTanggal('alpha')" class="btn-add-chip" style="background:var(--alpha-color);">+ Alpha</button>
                     </div>
                 </div>
@@ -285,7 +285,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                     <div class="chips-wrapper" id="chips-izin"></div>
                     <div class="quick-input-group">
-                        <input type="number" id="input-add-izin" min="1" max="31" placeholder="Tgl">
+                        <input type="text" id="input-add-izin" maxlength="2" inputmode="numeric" placeholder="Tgl" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)">
                         <button onclick="tambahTanggal('izin')" class="btn-add-chip" style="background:var(--izin-color);">+ Izin</button>
                     </div>
                 </div>
@@ -298,7 +298,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                     <div class="chips-wrapper" id="chips-sakit"></div>
                     <div class="quick-input-group">
-                        <input type="number" id="input-add-sakit" min="1" max="31" placeholder="Tgl">
+                        <input type="text" id="input-add-sakit" maxlength="2" inputmode="numeric" placeholder="Tgl" oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,2)">
                         <button onclick="tambahTanggal('sakit')" class="btn-add-chip" style="background:var(--sakit-color);">+ Sakit</button>
                     </div>
                 </div>
@@ -363,6 +363,34 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     let tempSakit = [], tempIzin = [], tempAlpha = [];
     let isSyncing = false;
     let globalInitData = null;
+
+    // FUNGSI PEMBERSIH & PEMISAH TANGGAL OTOMATIS (SMART PARSER)
+    function parseDates(val) {
+        if (!val && val !== 0) return [];
+        let str = Array.isArray(val) ? val.join(',') : String(val);
+        let parts = str.split(/[\s,;/\\-]+/).filter(Boolean);
+        let result = [];
+
+        parts.forEach(part => {
+            let digits = part.replace(/\D/g, '');
+            if (!digits) return;
+
+            // Jika lebih dari 2 digit (misal 2003), otomatis dipisah per 2 digit
+            if (digits.length > 2) {
+                for (let i = 0; i < digits.length; i += 2) {
+                    let chunk = digits.substring(i, i + 2);
+                    let num = parseInt(chunk, 10);
+                    if (num >= 1 && num <= 31) result.push(num);
+                }
+            } else {
+                let num = parseInt(digits, 10);
+                if (num >= 1 && num <= 31) result.push(num);
+            }
+        });
+
+        // Hapus duplikat angka
+        return Array.from(new Set(result));
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
         generateAlphabetGrid();
@@ -557,7 +585,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     
                     successCount++;
                 } else if (jsonRes.status === 'error') {
-                    // Ditolak server (misal karena pekan sudah direset), hapus dari antrean offline HP
                     remaining = remaining.filter(q => q._rowIndex !== item._rowIndex);
                     showToast("⚠️ " + (jsonRes.message || "Gagal sinkronisasi data"));
                 }
@@ -599,7 +626,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         try {
             let initData = await loadAllInitData();
 
-            // 1. Ambil Pengaturan Config
             if (initData && initData.config && initData.config.filterAbsen) {
                 currentFilterMode = initData.config.filterAbsen.toLowerCase();
             }
@@ -615,12 +641,10 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 }
             }
 
-            // 2. Ambil Broadcast jika ada
             if (initData && initData.broadcast) {
                 applyBroadcast(initData.broadcast);
             }
 
-            // 3. Ambil Rekap Absen & FILTER HANYA DATA SHEET KOREKSI_ABSEN
             let allRekap = (initData && initData.rekap) ? initData.rekap : [];
             let rawData = allRekap.filter(r => r._source === 'koreksi' || !r._source);
 
@@ -630,15 +654,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 updateDashboardStats();
                 container.innerHTML = `<div style="text-align:center; padding:30px 15px; color:var(--text-muted); font-size:12px; background:white; border-radius:18px; border:1px solid var(--border);">Data pekan ini masih kosong / sudah diarsip.</div>`;
                 return;
-            }
-
-            function parseDates(val) {
-                if (Array.isArray(val)) return val.map(x => parseInt(x, 10)).filter(x => !isNaN(x));
-                if (typeof val === 'number') return [val];
-                if (typeof val === 'string' && val.trim()) {
-                    return val.replace(/[/;]/g, ',').split(',').map(x => parseInt(x.trim(), 10)).filter(x => !isNaN(x));
-                }
-                return [];
             }
 
             let filtered = rawData.filter(r => {
@@ -1168,16 +1183,27 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         const inputId = type === 'alpha' ? 'input-add-alpha' : (type === 'izin' ? 'input-add-izin' : 'input-add-sakit');
         const el = document.getElementById(inputId);
         if (!el) return;
-        const val = parseInt(el.value.trim(), 10);
-        if (isNaN(val) || val < 1 || val > 31) return;
+        
+        const rawVal = el.value.trim();
+        if (!rawVal) return;
 
-        tempAlpha = tempAlpha.filter(x => x !== val);
-        tempIzin = tempIzin.filter(x => x !== val);
-        tempSakit = tempSakit.filter(x => x !== val);
+        // Memproses input dengan parser pintar
+        const parsedDates = parseDates(rawVal);
+        if (parsedDates.length === 0) {
+            showToast("⚠️ Tanggal tidak valid (harus 1-31)");
+            el.value = '';
+            return;
+        }
 
-        if (type === 'alpha') tempAlpha.push(val);
-        if (type === 'izin') tempIzin.push(val);
-        if (type === 'sakit') tempSakit.push(val);
+        parsedDates.forEach(val => {
+            tempAlpha = tempAlpha.filter(x => x !== val);
+            tempIzin = tempIzin.filter(x => x !== val);
+            tempSakit = tempSakit.filter(x => x !== val);
+
+            if (type === 'alpha') tempAlpha.push(val);
+            if (type === 'izin') tempIzin.push(val);
+            if (type === 'sakit') tempSakit.push(val);
+        });
 
         el.value = '';
         renderChips();
