@@ -60,6 +60,48 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .slide-up { animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 .fade-in { animation: fadeIn 0.2s ease-in; }
 
+/* DYNAMIC ISLAND ALA IPHONE */
+.dynamic-island {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-25px) scale(0.6);
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(12px);
+    color: white;
+    padding: 7px 16px;
+    border-radius: 30px;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    z-index: 9999999;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    white-space: nowrap;
+}
+
+.dynamic-island.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.dynamic-island-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dynamic-island-dot.online { background: #10b981; box-shadow: 0 0 10px #10b981; }
+.dynamic-island-dot.offline { background: #f43f5e; box-shadow: 0 0 10px #f43f5e; }
+.dynamic-island-dot.sync { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+
 .top-deck { background: white; border-radius: 20px; padding: 14px 16px; border: 1px solid var(--border); box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 12px; }
 .header-compact { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .avatar { background: var(--primary-gradient); color: white; width: 40px; height: 40px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 17px; font-weight: 800; box-shadow: 0 4px 12px rgba(5,150,105,0.25); }
@@ -67,11 +109,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .progress-inline { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); }
 .progress-bar-bg { flex: 1; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
 .progress-bar-fill { background: var(--primary); height: 100%; width: 0%; border-radius: 10px; transition: width 0.4s ease; }
-
-.sync-badge { font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 10px; display: inline-flex; align-items: center; gap: 4px; }
-.sync-badge.pending { background: #fef3c7; color: #d97706; border: 1px solid #fcd34d; }
-.sync-badge.online { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
-.sync-badge.offline { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; }
 
 .mode-banner { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; padding: 8px 12px; border-radius: 12px; font-size: 10px; font-weight: 800; margin-top: 10px; text-align: center; }
 .mode-banner.alpha { background: var(--alpha-bg); color: var(--alpha-color); border-color: #fecdd3; }
@@ -128,92 +165,79 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .btn-edit-card { background: #f8fafc; color: var(--text-main); border: 1px solid var(--border); }
 
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
-.modal-overlay.center-modal { align-items: center; padding: 16px; }
+.modal-overlay.center-modal { align-items: center; padding: 12px; }
 
 .modal-content { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
 .modal-overlay.center-modal .modal-content { border-radius: 20px; max-height: 90vh; }
 
-/* REVISI HEADER MODAL (DITIPISKAN & JUSTIFY-CONTENT SPACE-BETWEEN) */
-.modal-header { padding: 8px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
+.modal-header { padding: 10px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
 .modal-body { padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
 
-/* REVISI KARTU & FOTO SANTRI (LEBIH BESAR & PROPOSIONAL) */
-.id-card-box {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 14px;
-}
-.photo-container-id {
-    flex-shrink: 0;
-    width: 110px;
-    height: 140px;
-    position: relative;
-}
-.photo-img-id {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 14px;
-    border: 2px solid var(--primary);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    background: #ffffff;
-}
-.photo-placeholder-id {
-    width: 100%;
-    height: 100%;
-    border-radius: 14px;
-    border: 2px dashed var(--border);
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 42px;
-}
-.id-card-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    flex: 1;
-    min-width: 0;
-}
-.id-card-nama {
-    font-size: 15px;
-    font-weight: 800;
-    color: var(--text-main);
-    line-height: 1.3;
-    text-transform: uppercase;
-    word-break: break-word;
-}
-.id-card-meta {
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 600;
-}
-.meta-val {
-    color: var(--text-main);
-}
-.meta-val-dom {
-    color: var(--primary);
-    font-weight: 800;
+.id-card-box { display: flex; align-items: center; gap: 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 18px; padding: 12px; }
+.photo-container-id { flex-shrink: 0; width: 85px; height: 110px; position: relative; }
+.photo-img-id { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid var(--primary); background: #ffffff; }
+.photo-placeholder-id { width: 100%; height: 100%; border-radius: 12px; border: 2px dashed var(--border); background: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+.id-card-details { display: flex; flex-direction: column; justify-content: center; gap: 6px; flex: 1; min-width: 0; }
+.id-card-nama { font-size: 14px; font-weight: 800; color: var(--text-main); line-height: 1.3; text-transform: uppercase; word-break: break-word; }
+.id-card-meta { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+.meta-val { color: var(--text-main); }
+.meta-val-dom { color: var(--primary); font-weight: 800; }
+
+.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; transition: border-color 0.2s, background 0.2s; }
+.section-box.drag-over { border: 2px dashed var(--primary); background: #ecfdf5; }
+
+.section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+
+.chips-wrapper { display: flex; flex-wrap: wrap; gap: 6px; min-height: 38px; padding: 6px; border-radius: 10px; background: white; border: 1px dashed var(--border); align-items: center; transition: 0.2s; }
+.chips-wrapper.drag-over { border-color: var(--primary); background: #f0fdf4; }
+
+.chip { padding: 6px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; cursor: grab; user-select: none; touch-action: none; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.15s; }
+.chip:active { cursor: grabbing; transform: scale(1.08); }
+.chip-sakit { background: var(--sakit-bg); color: var(--sakit-color); border: 1px solid #bae6fd; }
+.chip-izin { background: var(--izin-bg); color: var(--izin-color); border: 1px solid #fde68a; }
+.chip-alpha { background: var(--alpha-bg); color: var(--alpha-color); border: 1px solid #fecdd3; }
+
+.trash-zone { background: #fff1f2; border: 2px dashed #fda4af; border-radius: 14px; padding: 10px; text-align: center; color: #e11d48; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+.trash-zone.drag-over { background: #ffe4e6; border-color: #e11d48; transform: scale(1.02); }
+
+.ios-btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 10px; }
+.ios-btn { width: 100%; padding: 12px; border-radius: 14px; font-size: 12px; font-weight: 800; border: none; cursor: pointer; transition: 0.15s; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.ios-btn:active { transform: scale(0.97); }
+.ios-btn.alpha { background: var(--alpha-bg); color: var(--alpha-color); border: 1px solid #fecdd3; }
+.ios-btn.izin { background: var(--izin-bg); color: var(--izin-color); border: 1px solid #fde68a; }
+.ios-btn.sakit { background: var(--sakit-bg); color: var(--sakit-color); border: 1px solid #bae6fd; }
+.ios-btn.trash { background: #ffe4e6; color: #e11d48; border: 1px solid #fecdd3; }
+.ios-btn.cancel { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); margin-top: 4px; }
+
+.tut-sim-screen-wide { background: #f8fafc; border: 1px solid var(--border); border-radius: 18px; padding: 14px; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 10px; text-align: left; width: 100%; }
+
+.moving-chip-demo { position: absolute; padding: 5px 10px; border-radius: 10px; font-size: 11px; font-weight: 800; z-index: 10; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.hand-pointer-demo { position: absolute; font-size: 28px; z-index: 20; pointer-events: none; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25)); }
+
+@keyframes realisticDragAndChangeColor {
+    0% { top: 58px; left: 18px; background: var(--alpha-bg); color: var(--alpha-color); border: 1px solid #fecdd3; transform: scale(1); }
+    20% { top: 58px; left: 18px; background: var(--alpha-bg); color: var(--alpha-color); border: 1px solid #fecdd3; transform: scale(1.1); }
+    60% { top: 135px; left: 18px; background: var(--alpha-bg); color: var(--alpha-color); border: 1px solid #fecdd3; transform: scale(1.1); }
+    70% { top: 135px; left: 18px; background: var(--sakit-bg); color: var(--sakit-color); border: 1px solid #bae6fd; transform: scale(1); }
+    90%, 100% { top: 135px; left: 18px; background: var(--sakit-bg); color: var(--sakit-color); border: 1px solid #bae6fd; transform: scale(1); }
 }
 
-.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 12px; }
-.section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+@keyframes handFollowDrag {
+    0% { top: 62px; left: 65px; opacity: 0; }
+    15% { top: 62px; left: 65px; opacity: 1; transform: scale(1); }
+    20% { top: 62px; left: 65px; transform: scale(0.85); }
+    60% { top: 140px; left: 65px; transform: scale(0.85); }
+    70% { top: 140px; left: 65px; opacity: 1; transform: scale(1); }
+    85%, 100% { top: 140px; left: 65px; opacity: 0; }
+}
 
-.chips-wrapper { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 24px; }
-.chip { padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px; }
-.chip-sakit { background: var(--sakit-bg); color: var(--sakit-color); }
-.chip-izin { background: var(--izin-bg); color: var(--izin-color); }
-.chip-alpha { background: var(--alpha-bg); color: var(--alpha-color); }
-.chip-del { cursor: pointer; opacity: 0.7; font-size: 11px; }
+.anim-chip-color { animation: realisticDragAndChangeColor 3.5s infinite ease-in-out; }
+.anim-hand-color { animation: handFollowDrag 3.5s infinite ease-in-out; }
 
-.quick-input-group { display: flex; gap: 6px; width: 100%; }
-.quick-input-group input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; text-align: left; outline: none; transition: border-color 0.2s; }
+.practice-banner-active { background: #ecfdf5; border: 2px dashed #10b981; color: #047857; padding: 10px; border-radius: 12px; font-size: 11px; font-weight: 800; text-align: center; margin-bottom: 8px; animation: slideUp 0.3s ease; }
+
+.quick-input-group { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+.quick-input-group input { flex: 1; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 11px; font-weight: 600; text-align: left; outline: none; }
 .quick-input-group input:focus { border-color: var(--primary); }
 .btn-add-chip { padding: 8px 12px; border-radius: 8px; font-size: 10px; font-weight: 800; color: white; border: none; cursor: pointer; white-space: nowrap; }
 
@@ -229,6 +253,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     </style>
 </head>
 <body>
+
+    <!-- DYNAMIC ISLAND ALA IPHONE ATAS TEMPAT POPUP STATUS -->
+    <div id="dynamic-island" class="dynamic-island">
+        <span id="island-dot" class="dynamic-island-dot online"></span>
+        <span id="island-msg">Terhubung ke Jaringan</span>
+    </div>
 
     <div id="toast" class="toast">Notifikasi</div>
 
@@ -259,14 +289,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                 <div style="display:flex; gap:10px; align-items:center;">
                     <div class="avatar" id="nav-avatar">A</div>
                     <div>
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <h3 style="font-size:14px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
-                            <span id="net-status-badge" class="sync-badge online">● Online</span>
-                        </div>
+                        <h3 style="font-size:14px; font-weight:800;">Daerah <span id="koreksi-daerah">A</span></h3>
                         <p style="font-size:10px; color:var(--text-muted); font-weight:600;" id="stat-progress-text">0 / 0 Santri Selesai</p>
                     </div>
                 </div>
                 <div style="display:flex; gap:4px;">
+                    <button class="btn-act" style="background:#fef3c7; color:#d97706; border:1px solid #fde68a;" onclick="bukaModalTutorial()">❓ Tutorial</button>
                     <button class="btn-act" style="background:#f1f5f9; color:var(--text-main);" onclick="manualSync()">🔄 Sync</button>
                     <button class="btn-act" style="background:#e0f2fe; color:#0369a1;" onclick="bukaModalGantiPass()">🔑 Pass</button>
                     <button class="btn-act" style="background:#ffe4e6; color:var(--alpha-color);" onclick="logout()">Keluar</button>
@@ -315,16 +343,59 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         </div>
     </div>
 
-    <!-- MODAL EDIT KOREKSI ABSEN (KLIK OUTSIDE TO CLOSE ADDDED) -->
+    <!-- MODAL POPUP ACTION SHEET ALA IPHONE -->
+    <div id="modal-ios-action" class="modal-overlay center-modal" onclick="if(event.target===this) closeIosActionModal()">
+        <div class="modal-content slide-up" style="max-width:320px; border-radius:24px; padding:18px; text-align:center; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(12px); box-shadow: 0 20px 50px rgba(0,0,0,0.15);">
+            <div style="font-size:28px; margin-bottom:4px;">⚡</div>
+            <h3 id="ios-action-title" style="font-size:14px; font-weight:800; color:var(--text-main);">Pilih Aksi Tanggal</h3>
+            <p id="ios-action-sub" style="font-size:11px; color:var(--text-muted); margin-bottom:10px;">Pindahkan tanggal atau hapus data ini</p>
+
+            <div class="ios-btn-group">
+                <button class="ios-btn alpha" onclick="execIosAction('alpha')">🔴 Pindahkan ke ALPHA</button>
+                <button class="ios-btn izin" onclick="execIosAction('izin')">🟡 Pindahkan ke IZIN</button>
+                <button class="ios-btn sakit" onclick="execIosAction('sakit')">🔵 Pindahkan ke SAKIT</button>
+                <button class="ios-btn trash" onclick="execIosAction('trash')">🗑️ Hapus Tanggal Ini</button>
+                <button class="ios-btn cancel" onclick="closeIosActionModal()">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL TUTORIAL REVISI -->
+    <div id="modal-tutorial" class="modal-overlay center-modal" onclick="if(event.target===this) closeTutorialModal()">
+        <div class="modal-content slide-up" style="max-width: 450px; width: 92%; border-radius: 24px; padding: 20px; background: white;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <div style="font-size:14px; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:6px;">
+                    <span>🎬</span> Simulasi Visual & Praktek
+                </div>
+                <button onclick="closeTutorialModal()" style="background:#f1f5f9; border:none; width:28px; height:28px; border-radius:50%; font-weight:bold; cursor:pointer;">✕</button>
+            </div>
+
+            <div id="tutorial-canvas"></div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+                <button id="btn-tut-prev" onclick="changeTutStep(-1)" class="btn-act" style="background:#f1f5f9; color:var(--text-main); padding:10px 16px;">← Lalu</button>
+                <span id="tut-step-indicator" style="font-size:11px; font-weight:800; color:var(--text-muted);">Langkah 1 / 2</span>
+                <button id="btn-tut-next" onclick="handleTutNextClick()" class="btn-act" style="background:var(--primary-gradient); color:white; padding:10px 16px; font-weight:800;">Lanjut ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT KOREKSI ABSEN -->
     <div id="modal-edit-koreksi" class="modal-overlay" onclick="if(event.target===this) closeEditModal()">
         <div class="modal-content slide-up">
             <div class="modal-header">
-                <div style="font-size:13px; font-weight:800; letter-spacing:0.5px;">EDIT KOREKSI SANTRI</div>
-                <button onclick="closeEditModal()" style="background:rgba(255,255,255,0.25); color:white; border:none; width:26px; height:26px; border-radius:50%; font-size:12px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+                <div style="font-size:13px; font-weight:800; letter-spacing:0.5px;" id="edit-modal-title">EDIT KOREKSI SANTRI</div>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <button id="btn-undo" onclick="undoLastAction()" style="background:rgba(255,255,255,0.25); color:white; border:none; padding:4px 10px; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:4px; opacity:0.5;" disabled>↩️ Undo</button>
+                    <button onclick="closeEditModal()" style="background:rgba(255,255,255,0.25); color:white; border:none; width:26px; height:26px; border-radius:50%; font-size:12px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center;">✕</button>
+                </div>
             </div>
 
             <div class="modal-body">
-                <!-- KARTU TANDA PENGENAL SANTRI -->
+                <div id="practice-guide-banner" class="practice-banner-active" style="display:none;">
+                    🎯 SIMULASI PRAKTEK: Geser (drag) 1 tanggal di bawah ini ke mana saja untuk menyelesaikan tutorial!
+                </div>
+
                 <div class="id-card-box">
                     <div class="photo-container-id">
                         <img id="edit-foto" src="" alt="Foto Santri" class="photo-img-id" style="display:none;" onerror="this.style.display='none'; document.getElementById('edit-foto-placeholder').style.display='flex';">
@@ -341,43 +412,53 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                 </div>
 
-                <!-- ALPHA -->
-                <div class="section-box">
+                <div style="font-size:10px; color:var(--text-muted); font-weight:700; background:#eff6ff; border:1px solid #bfdbfe; padding:8px; border-radius:10px; text-align:center;">
+                    👉 <b>Geser (drag)</b> atau <b>Tap</b> tanggal untuk memindahkan/menghapus.
+                </div>
+
+                <!-- ZONA ALPHA -->
+                <div class="section-box" data-zone="alpha">
                     <div class="section-title" style="color:var(--alpha-color);">
                         <span>Tanggal Alpha (A)</span>
                         <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
-                    <div class="chips-wrapper" id="chips-alpha"></div>
+                    <div class="chips-wrapper" id="chips-alpha" data-zone="alpha"></div>
                     <div class="quick-input-group">
-                        <input type="text" id="input-add-alpha" placeholder="Misal: 1, 2, 3 atau 010203..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('alpha');}">
+                        <input type="text" id="input-add-alpha" placeholder="Tambah tanggal manual..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('alpha');}">
                         <button onclick="tambahTanggal('alpha')" class="btn-add-chip" style="background:var(--alpha-color);">+ Alpha</button>
                     </div>
                 </div>
 
-                <!-- IZIN -->
-                <div class="section-box">
+                <!-- ZONA IZIN -->
+                <div class="section-box" data-zone="izin">
                     <div class="section-title" style="color:var(--izin-color);">
                         <span>Tanggal Izin (I)</span>
                         <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
-                    <div class="chips-wrapper" id="chips-izin"></div>
+                    <div class="chips-wrapper" id="chips-izin" data-zone="izin"></div>
                     <div class="quick-input-group">
-                        <input type="text" id="input-add-izin" placeholder="Misal: 1, 2, 3 atau 010203..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('izin');}">
+                        <input type="text" id="input-add-izin" placeholder="Tambah tanggal manual..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('izin');}">
                         <button onclick="tambahTanggal('izin')" class="btn-add-chip" style="background:var(--izin-color);">+ Izin</button>
                     </div>
                 </div>
 
-                <!-- SAKIT -->
-                <div class="section-box">
+                <!-- ZONA SAKIT -->
+                <div class="section-box" data-zone="sakit">
                     <div class="section-title" style="color:var(--sakit-color);">
                         <span>Tanggal Sakit (S)</span>
                         <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
-                    <div class="chips-wrapper" id="chips-sakit"></div>
+                    <div class="chips-wrapper" id="chips-sakit" data-zone="sakit"></div>
                     <div class="quick-input-group">
-                        <input type="text" id="input-add-sakit" placeholder="Misal: 1, 2, 3 atau 010203..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('sakit');}">
+                        <input type="text" id="input-add-sakit" placeholder="Tambah tanggal manual..." onkeydown="if(event.key==='Enter'){event.preventDefault();tambahTanggal('sakit');}">
                         <button onclick="tambahTanggal('sakit')" class="btn-add-chip" style="background:var(--sakit-color);">+ Sakit</button>
                     </div>
+                </div>
+
+                <!-- ZONA TRASH / TONG SAMPAH -->
+                <div class="trash-zone" data-zone="trash" id="trash-zone">
+                    <span style="font-size:18px;">🗑️</span>
+                    <span>Geser tanggal ke sini untuk menghapus</span>
                 </div>
 
                 <div>
@@ -438,10 +519,15 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     let activeFilter = 'belum'; 
     let selectedRoom = null; 
     let tempSakit = [], tempIzin = [], tempAlpha = [];
+    let historyStack = [];
     let isSyncing = false;
     let globalInitData = null;
+    let selectedChipData = null;
+    
+    let tutCurrentStep = 1;
+    let isPracticeMode = false;
+    let islandTimer = null;
 
-    // FUNGSI PEMBERSIH & PEMISAH TANGGAL PINTAR
     function parseDates(val) {
         if (!val && val !== 0) return [];
         let str = Array.isArray(val) ? val.join(',') : String(val);
@@ -471,6 +557,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         generateAlphabetGrid();
         checkSavedLogin();
         setupNetworkListeners();
+        setupTouchDragAndDrop();
         
         loadAllInitData();
         
@@ -480,6 +567,45 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             }
         }, 15000);
     });
+
+    /* LOGIK FUNGSI DYNAMIC ISLAND */
+    function showDynamicIsland(type, text) {
+        const island = document.getElementById('dynamic-island');
+        const dot = document.getElementById('island-dot');
+        const msg = document.getElementById('island-msg');
+
+        if (!island || !dot || !msg) return;
+
+        msg.innerText = text;
+        dot.className = `dynamic-island-dot ${type}`;
+
+        island.classList.add('show');
+
+        if (islandTimer) clearTimeout(islandTimer);
+        islandTimer = setTimeout(() => {
+            island.classList.remove('show');
+        }, 3500);
+    }
+
+    function setupNetworkListeners() {
+        window.addEventListener('online', () => {
+            showDynamicIsland('online', '🌐 Jaringan Kembali Online');
+            showToast("🌐 Jaringan kembali online. Memulai auto-sync...");
+            processPendingQueue();
+            checkBroadcastPusat();
+        });
+
+        window.addEventListener('offline', () => {
+            showDynamicIsland('offline', '⚠️ Jaringan Terputus (Offline)');
+            showToast("⚠️ Jaringan terputus! Mode Offline Aktif.");
+        });
+
+        if (navigator.onLine) {
+            showDynamicIsland('online', '🌐 Mode Online Aktif');
+        } else {
+            showDynamicIsland('offline', '⚠️ Jaringan Terputus (Offline)');
+        }
+    }
 
     async function loadAllInitData(forceRefresh = false) {
         if (!navigator.onLine) return globalInitData;
@@ -529,32 +655,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     function closeBroadcastModal() {
         document.getElementById('modal-broadcast').style.display = 'none';
-    }
-
-    function setupNetworkListeners() {
-        window.addEventListener('online', () => {
-            updateNetworkBadge(true);
-            showToast("🌐 Jaringan kembali online. Memulai auto-sync...");
-            processPendingQueue();
-            checkBroadcastPusat();
-        });
-        window.addEventListener('offline', () => {
-            updateNetworkBadge(false);
-            showToast("⚠️ Jaringan terputus! Mode Offline Aktif.");
-        });
-        updateNetworkBadge(navigator.onLine);
-    }
-
-    function updateNetworkBadge(isOnline) {
-        const badge = document.getElementById('net-status-badge');
-        if (!badge) return;
-        if (isOnline) {
-            badge.className = "sync-badge online";
-            badge.innerHTML = "● Online";
-        } else {
-            badge.className = "sync-badge offline";
-            badge.innerHTML = "● Offline";
-        }
     }
 
     function checkSavedLogin() {
@@ -637,6 +737,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         if (queue.length === 0) return;
 
         isSyncing = true;
+        showDynamicIsland('sync', '🔄 Memulai Sinkronisasi...');
+
         let remaining = [...queue];
         let successCount = 0;
 
@@ -674,6 +776,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         isSyncing = false;
 
         if (successCount > 0) {
+            showDynamicIsland('online', `✅ Sync ${successCount} Data Berhasil`);
             showToast(`✅ ${successCount} Data offline berhasil tersinkronisasi ke pusat!`);
             renderKoreksiList();
         }
@@ -681,9 +784,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     async function manualSync() {
         if (!navigator.onLine) {
+            showDynamicIsland('offline', '⚠️ Sinyal Terputus');
             showToast("⚠️ Tidak ada jaringan internet!");
             return;
         }
+        showDynamicIsland('sync', '🔄 Sinkronisasi Data...');
         showToast("Memulai sinkronisasi...");
         await processPendingQueue();
         await loadAllInitData(true);
@@ -913,7 +1018,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
                     <div class="card-actions">
                         <button class="btn-act btn-verify" onclick="markAsSesuaiByRowIndex(${item._rowIndex})">✔ Sesuai / Benar</button>
-                        <button class="btn-act btn-edit-card" onclick="bukaModalKoreksiByRowIndex(${item._rowIndex})">✏ Edit Tanggal</button>
+                        <button class="btn-act btn-edit-card" onclick="bukaModalKoreksiByRowIndex(${item._rowIndex})">✏ Edit / Geser Tgl</button>
                     </div>
                 `;
                 listDiv.appendChild(card);
@@ -1012,11 +1117,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     async function sendOrQueueData(dataPayload) {
         if (!navigator.onLine) {
             queueForSync(dataPayload);
+            showDynamicIsland('offline', '💾 Data Tersimpan di HP');
             showToast("💾 Tersimpan di HP. Akan dikirim otomatis saat online.");
             return;
         }
 
-        showToast("Mengirim data ke pusat...");
+        showDynamicIsland('sync', '📤 Mengirim ke Pusat...');
         try {
             let res = await fetch(APPS_SCRIPT_URL, {
                 method: 'POST',
@@ -1029,7 +1135,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             let jsonRes = await res.json();
             
             if (res.ok && jsonRes.status === 'success') {
-                showToast("✔ Data berhasil dikirim ke pusat");
+                showDynamicIsland('online', '✔ Data Sukses Terkirim');
                 let mItem = masterKoreksi.find(x => x._rowIndex === dataPayload._rowIndex);
                 if (mItem) mItem._unsynced = false;
                 saveLocalCache();
@@ -1045,7 +1151,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         } catch(err) {
             console.warn("Gagal terkirim langsung, masuk antrean offline:", err);
             queueForSync(dataPayload);
-            showToast("💾 Koneksi terputus! Data disimpan lokal.");
+            showDynamicIsland('offline', '💾 Disimpan di HP (Sinyal Hilang)');
         }
     }
 
@@ -1209,19 +1315,23 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     function bukaModalKoreksiByRowIndex(rowIndex) {
         activeEditRowIndex = rowIndex;
+        isPracticeMode = false;
+        document.getElementById('practice-guide-banner').style.display = 'none';
+        document.getElementById('edit-modal-title').innerText = "EDIT KOREKSI SANTRI";
+
         const item = masterKoreksi.find(x => x._rowIndex === rowIndex);
         if (!item) return;
 
         tempSakit = [...(item._tglSakitArr || [])];
         tempIzin = [...(item._tglIzinArr || [])];
         tempAlpha = [...(item._tglAlphaArr || [])];
+        historyStack = [];
 
         document.getElementById('edit-nama').innerText = item._nama || '-';
         document.getElementById('edit-pps').innerText = item._idPps || '-';
         document.getElementById('edit-domisili').innerText = item._domisili || '-';
         document.getElementById('edit-ket').value = item._keterangan !== '-' ? item._keterangan : '';
 
-        // PROSES SET FOTO SANTRI
         let fotoImg = document.getElementById('edit-foto');
         let fotoPlaceholder = document.getElementById('edit-foto-placeholder');
 
@@ -1235,20 +1345,55 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
 
         renderChips();
+        updateUndoUI();
         document.getElementById('modal-edit-koreksi').style.display = 'flex';
+    }
+
+    function saveHistorySnapshot() {
+        historyStack.push({
+            alpha: [...tempAlpha],
+            izin: [...tempIzin],
+            sakit: [...tempSakit]
+        });
+        updateUndoUI();
+    }
+
+    function undoLastAction() {
+        if (historyStack.length === 0) return;
+        let lastState = historyStack.pop();
+        tempAlpha = lastState.alpha;
+        tempIzin = lastState.izin;
+        tempSakit = lastState.sakit;
+        renderChips();
+        updateUndoUI();
+        showToast("↩️ Perubahan dibatalkan!");
+    }
+
+    function updateUndoUI() {
+        let btn = document.getElementById('btn-undo');
+        if (!btn) return;
+        if (historyStack.length > 0) {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+        } else {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+        }
     }
 
     function renderChips() {
         const setChips = (containerId, arr, type, chipClass) => {
             let el = document.getElementById(containerId);
             if (!el) return;
-            el.innerHTML = arr.length === 0 ? `<span style="font-size:10px; color:var(--text-muted);">Tidak ada</span>` :
-                arr.map(tgl => `
-                    <span class="chip ${chipClass}">
-                        Tgl ${tgl}
-                        <span class="chip-del" onclick="hapusTanggal('${type}', ${tgl})">✕</span>
+            if (arr.length === 0) {
+                el.innerHTML = `<span style="font-size:10px; color:var(--text-muted); padding:4px;">Kosong (geser/tap tanggal ke sini)</span>`;
+            } else {
+                el.innerHTML = arr.map(tgl => `
+                    <span class="chip ${chipClass}" data-tgl="${tgl}" data-type="${type}" onclick="opsiTapChip(event, ${tgl}, '${type}')">
+                        🖐️ Tgl ${tgl}
                     </span>
                 `).join('');
+            }
         };
 
         setChips('chips-alpha', tempAlpha, 'alpha', 'chip-alpha');
@@ -1261,11 +1406,223 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
     }
 
-    function hapusTanggal(type, tgl) {
-        if (type === 'alpha') tempAlpha = tempAlpha.filter(x => x !== tgl);
-        if (type === 'izin') tempIzin = tempIzin.filter(x => x !== tgl);
-        if (type === 'sakit') tempSakit = tempSakit.filter(x => x !== tgl);
+    function moveChip(tgl, fromType, toType) {
+        if (fromType === toType) return;
+        saveHistorySnapshot();
+
+        if (fromType === 'alpha') tempAlpha = tempAlpha.filter(x => x !== tgl);
+        if (fromType === 'izin') tempIzin = tempIzin.filter(x => x !== tgl);
+        if (fromType === 'sakit') tempSakit = tempSakit.filter(x => x !== tgl);
+
+        if (toType === 'alpha' && !tempAlpha.includes(tgl)) tempAlpha.push(tgl);
+        if (toType === 'izin' && !tempIzin.includes(tgl)) tempIzin.push(tgl);
+        if (toType === 'sakit' && !tempSakit.includes(tgl)) tempSakit.push(tgl);
+
         renderChips();
+
+        if (toType === 'trash') {
+            showToast(`🗑️ Tgl ${tgl} dihapus. (Klik Undo jika batal)`);
+        } else {
+            showToast(`↔️ Tgl ${tgl} dipindah ke ${toType.toUpperCase()}`);
+        }
+
+        if (isPracticeMode) {
+            showToast("🎉 Hebat! Kamu sudah bisa menggeser tanggal!");
+            setTimeout(() => {
+                closeEditModal();
+                showToast("✅ Tutorial selesai! Selamat bertugas.");
+                isPracticeMode = false;
+            }, 1000);
+        }
+    }
+
+    function opsiTapChip(e, tgl, currentType) {
+        e.stopPropagation();
+        selectedChipData = { tgl, type: currentType };
+        document.getElementById('ios-action-title').innerText = `Aksi Tgl ${tgl}`;
+        document.getElementById('ios-action-sub').innerText = `Posisi saat ini: ${currentType.toUpperCase()}`;
+        document.getElementById('modal-ios-action').style.display = 'flex';
+    }
+
+    function closeIosActionModal() {
+        document.getElementById('modal-ios-action').style.display = 'none';
+        selectedChipData = null;
+    }
+
+    function execIosAction(targetZone) {
+        if (!selectedChipData) return;
+        moveChip(selectedChipData.tgl, selectedChipData.type, targetZone);
+        closeIosActionModal();
+    }
+
+    function bukaModalTutorial() {
+        tutCurrentStep = 1;
+        renderTutorialStep();
+        document.getElementById('modal-tutorial').style.display = 'flex';
+    }
+
+    function closeTutorialModal() {
+        document.getElementById('modal-tutorial').style.display = 'none';
+    }
+
+    function changeTutStep(delta) {
+        tutCurrentStep += delta;
+        if (tutCurrentStep < 1) tutCurrentStep = 1;
+        if (tutCurrentStep > 2) tutCurrentStep = 2;
+        renderTutorialStep();
+    }
+
+    function handleTutNextClick() {
+        if (tutCurrentStep < 2) {
+            changeTutStep(1);
+        } else {
+            closeTutorialModal();
+            mulaiPraktekLangsung();
+        }
+    }
+
+    function mulaiPraktekLangsung() {
+        isPracticeMode = true;
+        activeEditRowIndex = -999;
+
+        tempAlpha = [12];
+        tempIzin = [15];
+        tempSakit = [];
+        historyStack = [];
+
+        document.getElementById('edit-nama').innerText = "SANTRI SIMULASI (PRAKTEK)";
+        document.getElementById('edit-pps').innerText = "123456";
+        document.getElementById('edit-domisili').innerText = "KAMAR SIMULASI";
+        document.getElementById('edit-ket').value = "Coba geser tanggal di bawah";
+
+        document.getElementById('edit-foto').style.display = 'none';
+        document.getElementById('edit-foto-placeholder').style.display = 'flex';
+
+        document.getElementById('practice-guide-banner').style.display = 'block';
+        document.getElementById('edit-modal-title').innerText = "🎯 PRAKTEK KOREKSI LANGSUNG";
+
+        renderChips();
+        updateUndoUI();
+        document.getElementById('modal-edit-koreksi').style.display = 'flex';
+    }
+
+    function renderTutorialStep() {
+        const canvas = document.getElementById('tutorial-canvas');
+        const indicator = document.getElementById('tut-step-indicator');
+        const btnPrev = document.getElementById('btn-tut-prev');
+        const btnNext = document.getElementById('btn-tut-next');
+
+        indicator.innerText = `Langkah ${tutCurrentStep} / 2`;
+        btnPrev.style.opacity = tutCurrentStep === 1 ? "0.4" : "1";
+
+        if (tutCurrentStep === 1) {
+            btnNext.innerHTML = "Lanjut ➔";
+            canvas.innerHTML = `
+                <div class="tut-sim-screen-wide" style="height:210px;">
+                    <div style="font-size:10px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">1. DRAG TANGGAL (BERUBAH WARNA NYATA)</div>
+                    
+                    <div class="section-box" style="padding:8px; background:white;">
+                        <div style="font-size:9px; font-weight:800; color:var(--alpha-color);">TANGGAL ALPHA</div>
+                        <div style="height:28px;"></div>
+                    </div>
+
+                    <div class="section-box" style="padding:8px; background:white; margin-top:6px;">
+                        <div style="font-size:9px; font-weight:800; color:var(--sakit-color);">TANGGAL SAKIT</div>
+                        <div style="height:28px;"></div>
+                    </div>
+
+                    <div class="moving-chip-demo anim-chip-color">🖐️ Tgl 12</div>
+                    <div class="hand-pointer-demo anim-hand-color">👇</div>
+                </div>
+            `;
+        } else if (tutCurrentStep === 2) {
+            btnNext.innerHTML = "🚀 Mulai Praktek Langsung";
+            canvas.innerHTML = `
+                <div class="tut-sim-screen-wide" style="height:210px; justify-content:center; align-items:center; text-align:center;">
+                    <div style="font-size:38px; margin-bottom:6px;">🎯</div>
+                    <div style="font-size:14px; font-weight:800; color:var(--text-main); margin-bottom:4px;">Siap Coba Praktek?</div>
+                    <div style="font-size:11px; color:var(--text-muted); line-height:1.4; max-width:85%;">
+                        Klik tombol di bawah ini untuk langsung mencoba **menggeser 1 tanggal**. Jika kamu berhasil, tutorial ini akan otomatis hilang!
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    function setupTouchDragAndDrop() {
+        let draggedData = null;
+        let ghostEl = null;
+
+        document.addEventListener('pointerdown', function(e) {
+            let chip = e.target.closest('.chip');
+            if (!chip) return;
+
+            let tgl = parseInt(chip.getAttribute('data-tgl'), 10);
+            let type = chip.getAttribute('data-type');
+            if (!tgl || !type) return;
+
+            draggedData = { tgl, type, element: chip };
+
+            ghostEl = chip.cloneNode(true);
+            ghostEl.style.position = 'fixed';
+            ghostEl.style.zIndex = '999999';
+            ghostEl.style.pointerEvents = 'none';
+            ghostEl.style.opacity = '0.9';
+            ghostEl.style.transform = 'scale(1.1) rotate(2deg)';
+            ghostEl.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+            ghostEl.style.left = (e.clientX - 35) + 'px';
+            ghostEl.style.top = (e.clientY - 20) + 'px';
+            document.body.appendChild(ghostEl);
+
+            chip.style.opacity = '0.3';
+
+            function onPointerMove(pe) {
+                if (!ghostEl) return;
+                ghostEl.style.left = (pe.clientX - 35) + 'px';
+                ghostEl.style.top = (pe.clientY - 20) + 'px';
+
+                let dropZone = getDropZoneAtPoint(pe.clientX, pe.clientY);
+                clearZoneHighlights();
+                if (dropZone) dropZone.classList.add('drag-over');
+            }
+
+            function onPointerUp(pe) {
+                document.removeEventListener('pointermove', onPointerMove);
+                document.removeEventListener('pointerup', onPointerUp);
+
+                if (ghostEl) {
+                    ghostEl.remove();
+                    ghostEl = null;
+                }
+                if (draggedData && draggedData.element) {
+                    draggedData.element.style.opacity = '1';
+                }
+
+                let dropZone = getDropZoneAtPoint(pe.clientX, pe.clientY);
+                clearZoneHighlights();
+
+                if (dropZone && draggedData) {
+                    let targetZone = dropZone.getAttribute('data-zone');
+                    if (targetZone) {
+                        moveChip(draggedData.tgl, draggedData.type, targetZone);
+                    }
+                }
+                draggedData = null;
+            }
+
+            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointerup', onPointerUp);
+        });
+    }
+
+    function getDropZoneAtPoint(x, y) {
+        let el = document.elementFromPoint(x, y);
+        if (!el) return null;
+        return el.closest('[data-zone]');
+    }
+
+    function clearZoneHighlights() {
+        document.querySelectorAll('[data-zone]').forEach(z => z.classList.remove('drag-over'));
     }
 
     function tambahTanggal(type) {
@@ -1283,6 +1640,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             return;
         }
 
+        saveHistorySnapshot();
+
         parsedDates.forEach(val => {
             tempAlpha = tempAlpha.filter(x => x !== val);
             tempIzin = tempIzin.filter(x => x !== val);
@@ -1299,6 +1658,8 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     function addTodayDate(type) {
         let today = new Date().getDate();
+        saveHistorySnapshot();
+
         tempAlpha = tempAlpha.filter(x => x !== today);
         tempIzin = tempIzin.filter(x => x !== today);
         tempSakit = tempSakit.filter(x => x !== today);
@@ -1312,9 +1673,16 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 
     function closeEditModal() {
         document.getElementById('modal-edit-koreksi').style.display = 'none';
+        isPracticeMode = false;
     }
 
     function saveEditModal() {
+        if (isPracticeMode) {
+            showToast("🎉 Latihan selesai! Kamu sudah siap menggunakan aplikasi.");
+            closeEditModal();
+            return;
+        }
+
         if (activeEditRowIndex === null) return;
         const item = masterKoreksi.find(x => x._rowIndex === activeEditRowIndex);
         if (!item) return;
