@@ -51,6 +51,13 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
 body { background-color: var(--bg-color); color: var(--text-main); padding: 12px; max-width: 480px; margin: 0 auto; padding-bottom: 24px; }
 
+/* MATIKAN TRANSISI SAAT DRAGGING AGAR SANGAT RINGAN DI HP */
+body.is-dragging *, body.is-dragging {
+    transition: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
 .view { display: none; }
 .view.active { display: block !important; }
 
@@ -67,14 +74,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .fade-in { animation: fadeIn 0.2s ease-in; }
 .bounce-in { animation: bounceIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-/* DYNAMIC ISLAND ALA IPHONE */
+/* DYNAMIC ISLAND */
 .dynamic-island {
     position: fixed;
     top: 12px;
     left: 50%;
     transform: translateX(-50%) translateY(-25px) scale(0.6);
-    background: rgba(15, 23, 42, 0.92);
-    backdrop-filter: blur(12px);
+    background: rgba(15, 23, 42, 0.96);
     color: white;
     padding: 7px 16px;
     border-radius: 30px;
@@ -171,13 +177,11 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .btn-verify { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
 .btn-edit-card { background: #f8fafc; color: var(--text-main); border: 1px solid var(--border); }
 
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px); z-index: 99999; align-items: flex-end; justify-content: center; }
+/* MODAL OVERLAY */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.75); z-index: 99999; align-items: flex-end; justify-content: center; }
 .modal-overlay.center-modal { align-items: center; padding: 12px; }
 
-/* MODAL PREVIEW FOTO SELALU TAMPIL DI PALING DEPAN */
-#modal-photo-preview {
-    z-index: 999999 !important;
-}
+#modal-photo-preview { z-index: 999999 !important; }
 
 .modal-content { background: white; width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); }
 .modal-overlay.center-modal .modal-content { border-radius: 20px; max-height: 90vh; }
@@ -185,14 +189,12 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .modal-header { padding: 12px 16px; background: var(--primary-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
 .modal-body { padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-/* KARTU PROFIL SANTRI DENGAN INDIKATOR ZOOM */
 .id-card-box { display: flex; align-items: center; gap: 14px; background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 12px; }
 .photo-container-id { flex-shrink: 0; width: 68px; height: 85px; position: relative; cursor: pointer; }
 .photo-img-id { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid var(--primary); background: #ffffff; transition: transform 0.15s; }
 .photo-container-id:active .photo-img-id { transform: scale(0.95); }
 .photo-placeholder-id { width: 100%; height: 100%; border-radius: 12px; border: 2px dashed var(--border); background: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 32px; }
 
-/* BADGE ZOOM DI POJOK FOTO */
 .photo-zoom-badge {
     position: absolute;
     bottom: -4px;
@@ -213,21 +215,22 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 .meta-val { color: var(--text-main); }
 .meta-val-dom { color: var(--primary); font-weight: 800; }
 
-.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; transition: border-color 0.2s, background 0.2s; }
-.section-box.drag-over { border: 2px dashed var(--primary); background: #ecfdf5; }
+/* STYLE UNTUK ZONA DROP (HANYA SISI LUAR KARTU YANG TERHUBUNG) */
+.section-box { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; }
+.section-box.drag-over { border: 2px dashed var(--primary) !important; background: #ecfdf5 !important; }
 
 .section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 
-.chips-wrapper { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; padding: 6px; border-radius: 10px; background: white; border: 1px dashed var(--border); align-items: center; transition: 0.2s; }
-.chips-wrapper.drag-over { border-color: var(--primary); background: #f0fdf4; }
+/* DIBERSIHKAN: TIDAK ADA BORDER TAMBAHAN DI BAGIAN DALAM WRAPPER CHIP */
+.chips-wrapper { display: flex; flex-wrap: wrap; gap: 6px; min-height: 36px; padding: 6px; border-radius: 10px; background: white; border: 1px dashed var(--border); align-items: center; }
 
-.chip { padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; cursor: grab; user-select: none; touch-action: none; box-shadow: 0 2px 4px rgba(0,0,0,0.04); transition: transform 0.15s; }
+.chip { padding: 6px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; cursor: grab; user-select: none; touch-action: none; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
 .chip:active { cursor: grabbing; transform: scale(1.08); }
 .chip-sakit { background: var(--sakit-bg); color: var(--sakit-color); border: 1px solid #bae6fd; }
 .chip-izin { background: var(--izin-bg); color: var(--izin-color); border: 1px solid #fde68a; }
 .chip-alpha { background: var(--alpha-bg); color: var(--alpha-color); border: 1px solid #fecdd3; }
 
-/* TRASH ZONE MELAYANG (FLOATING) SAAT DRAG */
+/* TRASH ZONE MELAYANG */
 .trash-zone {
     display: none;
     position: fixed;
@@ -249,7 +252,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
     justify-content: center;
     gap: 8px;
     box-shadow: 0 10px 30px rgba(225, 29, 72, 0.3);
-    transition: transform 0.2s, background 0.2s;
 }
 
 .trash-zone.show-floating {
@@ -258,9 +260,9 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
 }
 
 .trash-zone.drag-over {
-    background: #ffe4e6;
-    border-color: #e11d48;
-    transform: translateX(-50%) scale(1.03);
+    background: #ffe4e6 !important;
+    border-color: #e11d48 !important;
+    transform: translateX(-50%) scale(1.03) !important;
 }
 
 .global-quick-card {
@@ -441,7 +443,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     🎯 SIMULASI PRAKTEK: Geser (drag) 1 tanggal ke mana saja untuk menyelesaikan tutorial!
                 </div>
 
-                <!-- PROFIL KARTU DENGAN FOTO LEBIH BESAR + TRIGER ZOOM -->
+                <!-- PROFIL KARTU SANTRI -->
                 <div class="id-card-box">
                     <div class="photo-container-id" onclick="bukaPreviewFoto()" title="Klik untuk perbesar foto">
                         <img id="edit-foto" src="" alt="Foto Santri" class="photo-img-id" style="display:none;" onerror="this.style.display='none'; document.getElementById('edit-foto-placeholder').style.display='flex';">
@@ -455,13 +457,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                 </div>
 
-                <!-- ZONA ALPHA -->
+                <!-- ZONA ALPHA (Satu-satunya elemen penyimpan data-zone) -->
                 <div class="section-box" data-zone="alpha">
                     <div class="section-title" style="color:var(--alpha-color);">
                         <span>Tanggal Alpha (A)</span>
                         <button onclick="addTodayDate('alpha')" style="font-size:9px; color:var(--alpha-color); background:var(--alpha-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
-                    <div class="chips-wrapper" id="chips-alpha" data-zone="alpha"></div>
+                    <div class="chips-wrapper" id="chips-alpha"></div>
                 </div>
 
                 <!-- ZONA IZIN -->
@@ -470,7 +472,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                         <span>Tanggal Izin (I)</span>
                         <button onclick="addTodayDate('izin')" style="font-size:9px; color:var(--izin-color); background:var(--izin-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
-                    <div class="chips-wrapper" id="chips-izin" data-zone="izin"></div>
+                    <div class="chips-wrapper" id="chips-izin"></div>
                 </div>
 
                 <!-- ZONA SAKIT -->
@@ -479,7 +481,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                         <span>Tanggal Sakit (S)</span>
                         <button onclick="addTodayDate('sakit')" style="font-size:9px; color:var(--sakit-color); background:var(--sakit-bg); border:none; padding:3px 8px; border-radius:6px; font-weight:800; cursor:pointer;">+ Hari Ini</button>
                     </div>
-                    <div class="chips-wrapper" id="chips-sakit" data-zone="sakit"></div>
+                    <div class="chips-wrapper" id="chips-sakit"></div>
                 </div>
 
                 <!-- QUICK INPUT BAR GLOBAL -->
@@ -493,7 +495,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     </div>
                 </div>
 
-                <!-- ZONA TRASH MELAYANG (FLOATING) -->
+                <!-- ZONA TRASH MELAYANG -->
                 <div class="trash-zone" data-zone="trash" id="trash-zone">
                     <span style="font-size:18px;">🗑️</span>
                     <span>Lepas tanggal di sini untuk menghapus</span>
@@ -547,7 +549,7 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         </div>
     </div>
 
-    <!-- MODAL POPUP PREVIEW FOTO SANTRI (DITAMPILKAN PALING DEPAN) -->
+    <!-- MODAL POPUP PREVIEW FOTO SANTRI -->
     <div id="modal-photo-preview" class="modal-overlay center-modal" onclick="if(event.target===this) closePhotoPreview()">
         <div class="modal-content bounce-in" style="max-width:340px; border-radius:24px; padding:16px; text-align:center; background:white; box-shadow: 0 20px 60px rgba(0,0,0,0.35);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -1402,7 +1404,6 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         document.getElementById('modal-edit-koreksi').style.display = 'flex';
     }
 
-    /* POPUP PREVIEW FOTO SANTRI (DITAMPILKAN PALING DEPAN) */
     function bukaPreviewFoto() {
         const fotoImg = document.getElementById('edit-foto');
         const previewImg = document.getElementById('preview-foto-img');
@@ -1613,10 +1614,14 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
         }
     }
 
+    /* SISTEM DRAG & DROP TEROPTIMASI ULTRA-LANCAR (60 FPS NO REFLOW) */
     function setupTouchDragAndDrop() {
         let draggedData = null;
         let ghostEl = null;
         const trashZone = document.getElementById('trash-zone');
+        let ticking = false;
+        let currentX = 0, currentY = 0;
+        let cachedZones = [];
 
         document.addEventListener('pointerdown', function(e) {
             let chip = e.target.closest('.chip');
@@ -1627,37 +1632,90 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
             if (!tgl || !type) return;
 
             draggedData = { tgl, type, element: chip };
-
+            
+            // Tampilkan trash zone melayang jika ada
             if (trashZone) trashZone.classList.add('show-floating');
+
+            // Cache area koordinat semua zona secara instan saat mulai ditekan
+            cachedZones = Array.from(document.querySelectorAll('[data-zone]')).map(el => {
+                let rect = el.getBoundingClientRect();
+                return {
+                    element: el,
+                    zone: el.getAttribute('data-zone'),
+                    left: rect.left,
+                    top: rect.top,
+                    right: rect.right,
+                    bottom: rect.bottom
+                };
+            });
+
+            // Aktifkan mode drag global untuk mematikan transisi CSS yang berat
+            document.body.classList.add('is-dragging');
 
             ghostEl = chip.cloneNode(true);
             ghostEl.style.position = 'fixed';
-            ghostEl.style.zIndex = '999999';
+            ghostEl.style.top = '0px';
+            ghostEl.style.left = '0px';
+            ghostEl.style.zIndex = '9999999';
             ghostEl.style.pointerEvents = 'none';
             ghostEl.style.opacity = '0.9';
-            ghostEl.style.transform = 'scale(1.1) rotate(2deg)';
-            ghostEl.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-            ghostEl.style.left = (e.clientX - 35) + 'px';
-            ghostEl.style.top = (e.clientY - 20) + 'px';
+            ghostEl.style.boxShadow = '0 10px 25px rgba(0,0,0,0.25)';
+            
+            currentX = e.clientX - 35;
+            currentY = e.clientY - 20;
+            ghostEl.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.1) rotate(2deg)`;
+            
             document.body.appendChild(ghostEl);
+            chip.style.opacity = '0.2';
 
-            chip.style.opacity = '0.3';
+            function updatePosition() {
+                if (ghostEl) {
+                    ghostEl.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.1) rotate(2deg)`;
+                    
+                    // Deteksi matematika koordinat (tanpa elementFromPoint / tanpa reflow)
+                    let checkX = currentX + 35;
+                    let checkY = currentY + 20;
+                    
+                    cachedZones.forEach(z => {
+                        let isHover = checkX >= z.left && checkX <= z.right && checkY >= z.top && checkY <= z.bottom;
+                        if (isHover) {
+                            z.element.classList.add('drag-over');
+                        } else {
+                            z.element.classList.remove('drag-over');
+                        }
+                    });
+                }
+                ticking = false;
+            }
 
             function onPointerMove(pe) {
                 if (!ghostEl) return;
-                ghostEl.style.left = (pe.clientX - 35) + 'px';
-                ghostEl.style.top = (pe.clientY - 20) + 'px';
+                currentX = pe.clientX - 35;
+                currentY = pe.clientY - 20;
 
-                let dropZone = getDropZoneAtPoint(pe.clientX, pe.clientY);
-                clearZoneHighlights();
-                if (dropZone) dropZone.classList.add('drag-over');
+                if (!ticking) {
+                    requestAnimationFrame(updatePosition);
+                    ticking = true;
+                }
             }
 
             function onPointerUp(pe) {
                 document.removeEventListener('pointermove', onPointerMove);
                 document.removeEventListener('pointerup', onPointerUp);
 
-                let dropZone = getDropZoneAtPoint(pe.clientX, pe.clientY);
+                document.body.classList.remove('is-dragging');
+
+                let dropZoneType = null;
+                let checkX = pe.clientX;
+                let checkY = pe.clientY;
+
+                // Cari lokasi drop berdasarkan data cache koordinat
+                cachedZones.forEach(z => {
+                    z.element.classList.remove('drag-over');
+                    if (checkX >= z.left && checkX <= z.right && checkY >= z.top && checkY <= z.bottom) {
+                        dropZoneType = z.zone;
+                    }
+                });
 
                 if (trashZone) trashZone.classList.remove('show-floating');
 
@@ -1669,18 +1727,13 @@ body { background-color: var(--bg-color); color: var(--text-main); padding: 12px
                     draggedData.element.style.opacity = '1';
                 }
 
-                clearZoneHighlights();
-
-                if (dropZone && draggedData) {
-                    let targetZone = dropZone.getAttribute('data-zone');
-                    if (targetZone) {
-                        moveChip(draggedData.tgl, draggedData.type, targetZone);
-                    }
+                if (dropZoneType && draggedData) {
+                    moveChip(draggedData.tgl, draggedData.type, dropZoneType);
                 }
                 draggedData = null;
             }
 
-            document.addEventListener('pointermove', onPointerMove);
+            document.addEventListener('pointermove', onPointerMove, { passive: true });
             document.addEventListener('pointerup', onPointerUp);
         });
     }
