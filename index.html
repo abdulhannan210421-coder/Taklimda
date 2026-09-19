@@ -183,6 +183,7 @@ body.is-dragging *, body.is-dragging {
 }
 .badge-role-mutaallim { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
 .badge-role-mualim { background: #f3e8ff; color: #7e22ce; border: 1px solid #e9d5ff; }
+.badge-role-mustamik { background: #fae8ff; color: #86198f; border: 1px solid #f5d0fe; }
 
 .progress-inline { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px 14px; border-radius: 14px; border: 1px solid var(--border); }
 .progress-bar-bg { flex: 1; background: #e2e8f0; height: 8px; border-radius: 10px; overflow: hidden; }
@@ -486,7 +487,7 @@ body.is-dragging *, body.is-dragging {
         </div>
     </div>
 
-    <!-- MODAL FITUR PENCARIAN DATA SANTRI (DENGAN TOMBOL CARI MANUAL TEROPTIMASI) -->
+    <!-- MODAL FITUR PENCARIAN DATA SANTRI (DENGAN DUKUNGAN MUSTAMIK) -->
     <div id="modal-cari-santri" class="modal-overlay center-modal" onclick="if(event.target===this) closeCariSantriModal()">
         <div class="modal-content slide-up" style="max-width:440px; width:95%; max-height:85vh; border-radius:24px; padding:16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -513,7 +514,7 @@ body.is-dragging *, body.is-dragging {
         </div>
     </div>
 
-    <!-- MODAL KARTU NAMA SANTRI (DETAIL VIEW DENGAN MUTA'ALLIM & MU'ALLIM) -->
+    <!-- MODAL KARTU NAMA SANTRI (DETAIL VIEW DENGAN MUTA'ALLIM, MU'ALLIM & MUSTAMIK) -->
     <div id="modal-detail-santri" class="modal-overlay center-modal" onclick="if(event.target===this) closeDetailSantriModal()">
         <div class="modal-content bounce-in" style="max-width:390px; width:92%; border-radius:24px; padding:18px; background:white; position:relative;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:10px;">
@@ -839,12 +840,14 @@ body.is-dragging *, body.is-dragging {
 
                     let mutaallimMap = json.mutaallimMap || {};
                     let mualimMap = json.mualimMap || {};
+                    let mustamikMap = json.mustamikMap || {};
 
                     cacheDataPencarian = json.dataUtama.map(row => {
                         let idPps = String(row[idxId] || '').trim();
                         
                         let detailMutaallim = mutaallimMap[idPps] || null;
                         let detailMualim = mualimMap[idPps] || null;
+                        let detailMustamik = mustamikMap[idPps] || null;
 
                         let ttlStr = (idxTtl !== -1 && row[idxTtl]) ? String(row[idxTtl]).trim() : '';
                         let kabStr = (idxKab !== -1 && row[idxKab]) ? String(row[idxKab]).trim() : '';
@@ -863,6 +866,18 @@ body.is-dragging *, body.is-dragging {
                         let mualimJalsah = detailMualim ? (detailMualim["JALSAH BARU"] || detailMualim["JALSAH"] || "-") : "-";
                         let mualimKategori = detailMualim ? (detailMualim["KATEGORI"] || detailMualim["KATAGORI"] || "-") : "-";
 
+                        // Data Mustamik
+						let isMustamik = !!detailMustamik;
+						let mustamikTugas = detailMustamik 
+							? (detailMustamik["KELAS KITAB"] || detailMustamik["KELAS"] || detailMustamik["MUSTAMIK"] || detailMustamik["NAMA MUSTAMIK"] || detailMustamik["JILID/MARHALAH"] || detailMustamik["TUGAS"] || "-") 
+							: "-";
+						let mustamikJalsah = detailMustamik 
+							? (detailMustamik["JALSAH KITAB"] || detailMustamik["JALSAH BARU"] || detailMustamik["JALSAH"] || "-") 
+							: "-";
+						let mustamikKategori = detailMustamik 
+							? (detailMustamik["KATEGORI"] || detailMustamik["KATAGORI"] || detailMustamik["KATEGORI KITAB"] || "Kitab") 
+							: "-";
+
                         return {
                             idPps: idPps,
                             nama: String(row[idxNama] || '').trim(),
@@ -878,7 +893,12 @@ body.is-dragging *, body.is-dragging {
                             isMualim: isMualim,
                             mualimTugas: mualimTugas,
                             mualimJalsah: mualimJalsah,
-                            mualimKategori: mualimKategori
+                            mualimKategori: mualimKategori,
+
+                            isMustamik: isMustamik,
+                            mustamikTugas: mustamikTugas,
+                            mustamikJalsah: mustamikJalsah,
+                            mustamikKategori: mustamikKategori
                         };
                     });
                 } else {
@@ -902,7 +922,7 @@ body.is-dragging *, body.is-dragging {
         let queryUpper = query.toUpperCase();
 
         let filtered = cacheDataPencarian.filter(item => {
-            let haystack = `${item.idPps} ${item.nama} ${item.domisili} ${item.mutaallimMarhalah} ${item.mutaallimJalsah} ${item.mutaallimKategori} ${item.mualimTugas} ${item.mualimJalsah} ${item.mualimKategori}`.toUpperCase();
+            let haystack = `${item.idPps} ${item.nama} ${item.domisili} ${item.mutaallimMarhalah} ${item.mutaallimJalsah} ${item.mutaallimKategori} ${item.mualimTugas} ${item.mualimJalsah} ${item.mualimKategori} ${item.mustamikTugas} ${item.mustamikJalsah} ${item.mustamikKategori}`.toUpperCase();
             return haystack.includes(queryUpper);
         });
 
@@ -935,7 +955,15 @@ body.is-dragging *, body.is-dragging {
                 }
             }
 
-            if (!item.isMutaallim && !item.isMualim) {
+            if (item.isMustamik) {
+                badgesHtml += `<span class="badge-role badge-role-mustamik">Mustamik (${item.mustamikKategori})</span>`;
+                detailTagsHtml += `<span style="font-size:9px; background:#fae8ff; color:#86198f; padding:2px 6px; border-radius:6px; font-weight:800;">Mustamik: ${item.mustamikTugas}</span>`;
+                if (!item.isMutaallim && !item.isMualim) {
+                    detailTagsHtml += `<span style="font-size:9px; background:#fef3c7; color:#d97706; padding:2px 6px; border-radius:6px; font-weight:800;">Jalsah: ${item.mustamikJalsah}</span>`;
+                }
+            }
+
+            if (!item.isMutaallim && !item.isMualim && !item.isMustamik) {
                 badgesHtml = `<span style="font-size:8.5px; padding:2px 6px; border-radius:6px; font-weight:800; background:#f1f5f9; color:var(--text-muted);">Umum / Santri</span>`;
             }
 
@@ -983,7 +1011,10 @@ body.is-dragging *, body.is-dragging {
         if (item.isMualim) {
             badgesContainer.innerHTML += `<span class="badge-role badge-role-mualim">Mu'allim (${item.mualimKategori})</span>`;
         }
-        if (!item.isMutaallim && !item.isMualim) {
+        if (item.isMustamik) {
+            badgesContainer.innerHTML += `<span class="badge-role badge-role-mustamik">Mustamik (${item.mustamikKategori})</span>`;
+        }
+        if (!item.isMutaallim && !item.isMualim && !item.isMustamik) {
             badgesContainer.innerHTML = `<span style="font-size:9px; padding:2px 6px; border-radius:6px; font-weight:800; background:#f1f5f9; color:var(--text-muted);">Data Utama Santri</span>`;
         }
 
@@ -1037,6 +1068,28 @@ body.is-dragging *, body.is-dragging {
                         <div style="background: white; padding: 6px 8px; border-radius: 8px; border: 1px solid #f3e8ff;">
                             <div style="font-size: 8.5px; color: var(--text-muted); font-weight: 800;">JALSAH BARU</div>
                             <div style="font-size: 11px; font-weight: 800; color: #d97706; margin-top: 1px;">${item.mualimJalsah}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Block Mustamik if exists
+        if (item.isMustamik) {
+            gridHtml += `
+                <div style="background: #fdf4ff; padding: 10px; border-radius: 12px; border: 1px solid #f5d0fe; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="font-size: 10px; font-weight: 800; color: #86198f; text-transform: uppercase; display: flex; justify-content: space-between;">
+                        <span>🎧 DATA MUSTAMIK</span>
+                        <span style="font-size:9px; background:#fae8ff; padding:1px 6px; border-radius:4px;">${item.mustamikKategori}</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                        <div style="background: white; padding: 6px 8px; border-radius: 8px; border: 1px solid #f5d0fe;">
+                            <div style="font-size: 8.5px; color: var(--text-muted); font-weight: 800;">TUGAS / MARHALAH</div>
+                            <div style="font-size: 11px; font-weight: 800; color: #86198f; margin-top: 1px;">${item.mustamikTugas}</div>
+                        </div>
+                        <div style="background: white; padding: 6px 8px; border-radius: 8px; border: 1px solid #f5d0fe;">
+                            <div style="font-size: 8.5px; color: var(--text-muted); font-weight: 800;">JALSAH BARU</div>
+                            <div style="font-size: 11px; font-weight: 800; color: #d97706; margin-top: 1px;">${item.mustamikJalsah}</div>
                         </div>
                     </div>
                 </div>
